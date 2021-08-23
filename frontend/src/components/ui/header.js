@@ -55,13 +55,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header({ categories }) {
   const classes = useStyles()
-  
+
   //useMediaQuery to determine user's screen size and adjust how tabs are rendered accordingly
   const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
-  
+
   // set state for drawer
   const [drawerOpen, setDrawerOpen] = useState(false)
-  
+
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
   //setting tabs for header
@@ -98,7 +98,13 @@ export default function Header({ categories }) {
     >
       <List disablePadding>
         {routes.map(route => (
-          <ListItem divider button key={route.node.strapiId}>
+          <ListItem
+            component={Link}
+            to={route.node.link || `/${route.node.name.toLowerCase()}`}
+            divider
+            button
+            key={route.node.strapiId}
+          >
             <ListItemText
               primary={route.node.name}
               classes={{ primary: classes.listItemText }}
@@ -110,7 +116,13 @@ export default function Header({ categories }) {
   )
 
   const actions = [
-    { icon: search, alt: "Search", title: "Search", visible: true },
+    {
+      icon: search,
+      alt: "Search",
+      title: "Search",
+      visible: true,
+      onClick: () => console.log("search"),
+    },
     { icon: cart, alt: "Cart", title: "Cart", link: "/cart", visible: true },
     {
       icon: account,
@@ -131,7 +143,11 @@ export default function Header({ categories }) {
   return (
     <AppBar color="transparent" elevation={0}>
       <Toolbar>
-        <Button classes={{ root: classes.logoContainer }}>
+        <Button
+          component={Link}
+          to="/"
+          classes={{ root: classes.logoContainer }}
+        >
           <Typography variant="h1">
             <span className={classes.logoText}>VAR</span> X
           </Typography>
@@ -140,13 +156,17 @@ export default function Header({ categories }) {
         {actions.map(action => {
           if (action.visible) {
             return (
-              <IconButton component={Link} to={action.link} key={action.alt}>
+              <IconButton
+                onClick={action.onClick}
+                component={action.onClick ? undefined : Link}
+                to={action.onClick ? undefined : action.link}
+                key={action.alt}
+              >
                 <img
                   className={classes.icon}
                   src={action.icon}
                   alt={action.alt}
                   title={action.title}
-                  onClick={action.onClick}
                 />
               </IconButton>
             )
