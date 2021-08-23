@@ -64,6 +64,18 @@ export default function Header({ categories }) {
 
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
+  //determine which route the user is currently at
+  const activeIndex = () => {
+    const found = routes.indexOf(
+      routes.filter(
+        ({ node: { name, link } }) =>
+          (link || `/${name.toLowerCase()}`) === window.location.pathname
+      )[0]
+    )
+
+    return found === -1 ? false : found
+  }
+
   //setting tabs for header
   const routes = [
     ...categories,
@@ -72,7 +84,7 @@ export default function Header({ categories }) {
 
   const tabs = (
     <Tabs
-      value={0}
+      value={activeIndex()}
       classes={{ indicator: classes.coloredIndicator, root: classes.tabs }}
     >
       {routes.map(route => (
@@ -97,8 +109,9 @@ export default function Header({ categories }) {
       classes={{ paper: classes.drawer }}
     >
       <List disablePadding>
-        {routes.map(route => (
+        {routes.map((route, i) => (
           <ListItem
+            selected={activeIndex() === i}
             component={Link}
             to={route.node.link || `/${route.node.name.toLowerCase()}`}
             divider
