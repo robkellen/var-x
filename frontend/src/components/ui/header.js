@@ -7,13 +7,12 @@ import IconButton from "@material-ui/core/IconButton"
 import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
-import Hidden from "@material-ui/core/Hidden"
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
-
 import { makeStyles } from "@material-ui/core/styles"
+import { Link } from "gatsby"
 
 // images for header icons
 import search from "../../images/search.svg"
@@ -29,30 +28,46 @@ const useStyles = makeStyles(theme => ({
   logoText: {
     color: theme.palette.common.offBlack,
   },
+  logoContainer: {
+    [theme.breakpoints.down("md")]: {
+      marginRight: "auto",
+    },
+  },
   tabs: {
     marginLeft: "auto",
     marginRight: "auto",
+  },
+  tab: {
+    ...theme.typography.body1,
+    fontWeight: 600,
   },
   icon: {
     height: "3rem",
     width: "3rem",
   },
+  drawer: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  listItemText: {
+    color: "#fff",
+  },
 }))
 
 export default function Header({ categories }) {
   const classes = useStyles()
-
-  // set state for drawer
-  const [drawerOpen, setDrawerOpen] = useState(false)
-
+  
   //useMediaQuery to determine user's screen size and adjust how tabs are rendered accordingly
   const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
+  
+  // set state for drawer
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
   //setting tabs for header
   const routes = [
     ...categories,
-    { node: { name: "Contact Us", strapiId: "contact" } },
+    { node: { name: "Contact Us", strapiId: "contact", link: "/contact" } },
   ]
 
   const tabs = (
@@ -61,7 +76,13 @@ export default function Header({ categories }) {
       classes={{ indicator: classes.coloredIndicator, root: classes.tabs }}
     >
       {routes.map(route => (
-        <Tab label={route.node.name} key={route.node.strapiId} />
+        <Tab
+          component={Link}
+          to={route.node.link || `/${route.node.name.toLowerCase()}`}
+          classes={{ root: classes.tabs }}
+          label={route.node.name}
+          key={route.node.strapiId}
+        />
       ))}
     </Tabs>
   )
@@ -73,50 +94,64 @@ export default function Header({ categories }) {
       onClose={() => setDrawerOpen(false)}
       disableBackdropTransition={!iOS}
       disableDiscovery={iOS}
+      classes={{ paper: classes.drawer }}
     >
       <List disablePadding>
         {routes.map(route => (
           <ListItem divider button key={route.node.strapiId}>
-            <ListItemText primary={route.node.name} />
+            <ListItemText
+              primary={route.node.name}
+              classes={{ primary: classes.listItemText }}
+            />
           </ListItem>
         ))}
       </List>
     </SwipeableDrawer>
   )
 
+  const actions = [
+    { icon: search, alt: "Search", title: "Search", visible: true },
+    { icon: cart, alt: "Cart", title: "Cart", link: "/cart", visible: true },
+    {
+      icon: account,
+      alt: "Account",
+      title: "Account",
+      visible: !matchesMD,
+      link: "/account",
+    },
+    {
+      icon: menu,
+      alt: "Menu",
+      title: "Menu",
+      visible: matchesMD,
+      onClick: () => setDrawerOpen(true),
+    },
+  ]
+
   return (
     <AppBar color="transparent" elevation={0}>
       <Toolbar>
-        <Button>
+        <Button classes={{ root: classes.logoContainer }}>
           <Typography variant="h1">
             <span className={classes.logoText}>VAR</span> X
           </Typography>
         </Button>
         {matchesMD ? drawer : tabs}
-        <IconButton>
-          <img
-            classes={{ root: classes.icon }}
-            src={search}
-            alt="Search"
-            title="Search"
-          />
-        </IconButton>
-        <IconButton>
-          <img
-            classes={{ root: classes.icon }}
-            src={cart}
-            alt="Cart"
-            title="Cart"
-          />
-        </IconButton>
-        <IconButton onClick={() => (matchesMD ? setDrawerOpen(true) : null)}>
-          <img
-            classes={{ root: classes.icon }}
-            src={matchesMD ? menu : account}
-            alt={matchesMD ? "Menu" : "Account"}
-            title={matchesMD ? "Menu" : "Account"}
-          />
-        </IconButton>
+        {actions.map(action => {
+          if (action.visible) {
+            return (
+              <IconButton component={Link} to={action.link} key={action.alt}>
+                <img
+                  className={classes.icon}
+                  src={action.icon}
+                  alt={action.alt}
+                  title={action.title}
+                  onClick={action.onClick}
+                />
+              </IconButton>
+            )
+          }
+        })}
       </Toolbar>
     </AppBar>
   )
