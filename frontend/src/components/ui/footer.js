@@ -1,6 +1,7 @@
 import React from "react"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
+import IconButton from "@material-ui/core/IconButton"
 import { makeStyles } from "@material-ui/core/styles"
 import { Link } from "gatsby"
 
@@ -21,13 +22,14 @@ const useStyles = makeStyles(theme => ({
   linkColumn: {
     width: "20rem",
   },
-  spacer: {
-    marginTop: "2rem",
-    marginBottom: "2rem",
-  },
   linkContainer: {
     [theme.breakpoints.down("md")]: {
       marginBottom: "3rem",
+    },
+  },
+  icon: {
+    "&:hover": {
+      backgroundColor: "transparent",
     },
   },
   "@global": {
@@ -39,6 +41,27 @@ const useStyles = makeStyles(theme => ({
 
 export default function Footer() {
   const classes = useStyles()
+
+  const socialMedia = [
+    {
+      icon: facebook,
+      alt: "facebook",
+      title: "facebook",
+      link: "https://facebook.com",
+    },
+    {
+      icon: twitter,
+      alt: "twitter",
+      title: "twitter",
+      link: "https://twitter.com",
+    },
+    {
+      icon: instagram,
+      alt: "instagram",
+      title: "instagram",
+      link: "https://instagram.com",
+    },
+  ]
 
   return (
     <footer className={classes.footer}>
@@ -111,15 +134,22 @@ export default function Footer() {
         {/* Social Media icons */}
         <Grid item>
           <Grid item container direction="column" alignItems="center">
-            <Grid item>
-              <img src={facebook} alt="facebook" title="facebook" />
-            </Grid>
-            <Grid item classes={{ root: classes.spacer }}>
-              <img src={twitter} alt="twitter" title="twitter" />
-            </Grid>
-            <Grid item>
-              <img src={instagram} alt="instagram" title="instagram" />
-            </Grid>
+            {socialMedia.map(platform => (
+              <Grid item key={platform.alt}>
+                <IconButton
+                  classes={{ root: classes.icon }}
+                  component="a"
+                  href={platform.link}
+                  disableRipple
+                >
+                  <img
+                    src={platform.icon}
+                    alt={platform.alt}
+                    title={platform.alt}
+                  />
+                </IconButton>
+              </Grid>
+            ))}
           </Grid>
         </Grid>
       </Grid>
