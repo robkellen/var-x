@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     width: "24.5rem",
     transition: "transform 0.5s ease",
     zIndex: 0,
+    padding: "1rem 2rem",
   },
   slideLeft: {
     transform: "translate(-24.5rem, 0px)",
@@ -133,7 +134,11 @@ export default function FeaturedProducts() {
                     (alignment === "flex-start" || alignment === "center"),
                 }),
               }}
-            ></Grid>
+            >
+              <Grid item>
+                <Typography variant="h4">{node.name.split(" ")[0]}</Typography>
+              </Grid>
+            </Grid>
           </Grid>
         )
       })}
