@@ -5,6 +5,7 @@ import Typography from "@material-ui/core/Typography"
 import IconButton from "@material-ui/core/IconButton"
 import Button from "@material-ui/core/Button"
 import Chip from "@material-ui/core/Chip"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { useStaticQuery, graphql } from "gatsby"
 import { makeStyles } from "@material-ui/core/styles"
 import Rating from "./Rating"
@@ -23,10 +24,17 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     height: "180rem",
     padding: "0 2.5rem",
+    [theme.breakpoints.down("md")]: {
+      height: "220rem",
+    },
   },
   featured: {
     height: "20rem",
     width: "20rem",
+    [theme.breakpoints.down("md")]: {
+      height: "15rem",
+      width: "15rem",
+    },
   },
   frame: {
     backgroundImage: `url(${frame})`,
@@ -40,6 +48,10 @@ const useStyles = makeStyles(theme => ({
     boxShadow: theme.shadows[5],
     position: "absolute",
     zIndex: 1,
+    [theme.breakpoints.down("md")]: {
+      height: "19.8rem",
+      width: "20rem",
+    },
   },
   slide: {
     backgroundColor: theme.palette.primary.main,
@@ -48,12 +60,19 @@ const useStyles = makeStyles(theme => ({
     transition: "transform 0.5s ease",
     zIndex: 0,
     padding: "1rem 2rem",
+    [theme.breakpoints.down("md")]: {
+      height: "15.2rem",
+      width: "19.5rem",
+    },
   },
   slideLeft: {
     transform: "translate(-24.5rem, 0px)",
   },
   slideRight: {
     transform: "translate(24.5rem, 0px)",
+  },
+  slideDown: {
+    transform: "translate(0rem, 17rem)",
   },
   productContainer: {
     margin: "5rem 0",
@@ -83,6 +102,9 @@ export default function FeaturedProducts() {
   //define state for which product slide will expand from behind product
   const [expanded, setExpanded] = useState(null)
 
+  //determine screen size to adjust elements accordingly if smaller than medium
+  const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
+
   // query db for featured products
   const data = useStaticQuery(graphql`
     query getFeatured {
@@ -107,16 +129,17 @@ export default function FeaturedProducts() {
     <Grid
       container
       direction="column"
-      justifyContent="center"
+      justifyContent={matchesMD ? "space-between" : "center"}
       classes={{ root: classes.background }}
     >
       {data.allStrapiProduct.edges.map(({ node }, i) => {
-        const alignment =
-          i === 0 || i === 3
-            ? "flex-start"
-            : i === 1 || i === 4
-            ? "center"
-            : "flex-end"
+        const alignment = matchesMD
+          ? "center"
+          : i === 0 || i === 3
+          ? "flex-start"
+          : i === 1 || i === 4
+          ? "center"
+          : "flex-end"
         return (
           <Grid
             item
@@ -146,10 +169,12 @@ export default function FeaturedProducts() {
               classes={{
                 root: clsx(classes.slide, {
                   [classes.slideLeft]:
-                    expanded === i && alignment === "flex-end",
+                    !matchesMD && expanded === i && alignment === "flex-end",
                   [classes.slideRight]:
+                    !matchesMD &&
                     expanded === i &&
                     (alignment === "flex-start" || alignment === "center"),
+                  [classes.slideDown]: matchesMD && expanded === i,
                 }),
               }}
             >
