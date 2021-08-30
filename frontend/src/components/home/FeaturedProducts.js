@@ -103,8 +103,6 @@ export default function FeaturedProducts() {
     }
   `)
 
-  console.log(data)
-
   return (
     <Grid
       container

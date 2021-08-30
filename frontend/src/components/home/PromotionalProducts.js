@@ -75,7 +75,6 @@ export default function PromotionalProducts() {
       }
     }
   `)
-  console.log(data)
 
   let slides = []
 
