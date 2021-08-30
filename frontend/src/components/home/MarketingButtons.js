@@ -22,9 +22,33 @@ const useStyles = makeStyles(theme => ({
     "&:hover": {
       transform: "scale(1.1)",
     },
+    [theme.breakpoints.down("lg")]: {
+      height: "40rem",
+      width: "40rem",
+      margin: "3rem",
+    },
+    [theme.breakpoints.down("sm")]: {
+      height: "30rem",
+      width: "30rem",
+    },
+    [theme.breakpoints.down("xs")]: {
+      height: "25rem",
+      width: "25rem",
+    },
   },
   container: {
     margin: "15rem 0",
+  },
+  icon: {
+    [theme.breakpoints.down("sm")]: {
+      height: "8rem",
+      width: "8rem",
+    },
+  },
+  label: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "2.75rem",
+    },
   },
 }))
 
