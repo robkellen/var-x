@@ -9,7 +9,7 @@ import { Link } from "gatsby"
 //images
 import address from "../images/address.svg"
 import phone from "../images/phone-adornment.svg"
-import email from "../images/email-adornment.svg"
+import Email from "../images/EmailAdornment"
 import send from "../images/send.svg"
 
 import Layout from "../components/ui/layout"
@@ -39,15 +39,18 @@ const useStyles = makeStyles(theme => ({
   },
   buttonContainer: {
     marginBottom: "-4rem",
-  },
-  sendButton: {
     textTransform: "none",
+    borderRadius: 0,
+    "&:hover": {
+      backgroundColor: theme.palette.secondary.light,
+    },
   },
   sendIcon: {
     marginLeft: "2rem",
   },
   contactInfo: {
     fontSize: "1.5rem",
+    marginLeft: "1rem",
   },
   contactIcon: {
     height: "3rem",
@@ -56,6 +59,21 @@ const useStyles = makeStyles(theme => ({
   contactEmailIcon: {
     height: "2.25rem",
     width: "3rem",
+  },
+  infoContainer: {
+    height: "21.25rem",
+  },
+  middleInfo: {
+    borderTop: "2px solid #fff",
+    borderBottom: "2px solid #fff",
+  },
+  iconContainer: {
+    borderRight: "2px solid #fff",
+    height: "7rem",
+    width: "8rem",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 }))
 
@@ -92,23 +110,23 @@ const ContactPage = () => {
               classes={{
                 root: clsx(classes.buttonContainer, classes.blockContainer),
               }}
+              component={Button}
             >
-              <Button classes={{ root: classes.sendButton }}>
-                <Typography variant="h4">Send Message</Typography>
-                <img
-                  src={send}
-                  alt="Send Message"
-                  className={classes.sendIcon}
-                />
-              </Button>
+              <Typography variant="h4">Send Message</Typography>
+              <img src={send} alt="Send Message" className={classes.sendIcon} />
             </Grid>
           </Grid>
         </Grid>
         {/* Contact Info*/}
         <Grid item>
-          <Grid container direction="column">
+          <Grid
+            container
+            direction="column"
+            justifyContent="space-between"
+            classes={{ root: classes.infoContainer }}
+          >
             <Grid item container alignItems="center">
-              <Grid item>
+              <Grid item classes={{ root: classes.iconContainer }}>
                 <img
                   src={address}
                   alt="Address"
@@ -124,8 +142,13 @@ const ContactPage = () => {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid item container alignItems="center">
-              <Grid item>
+            <Grid
+              item
+              container
+              alignItems="center"
+              classes={{ root: classes.middleInfo }}
+            >
+              <Grid item classes={{ root: classes.iconContainer }}>
                 <img src={phone} alt="Phone" className={classes.contactIcon} />
               </Grid>
               <Grid item>
@@ -138,12 +161,10 @@ const ContactPage = () => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center">
-              <Grid item>
-                <img
-                  src={email}
-                  alt="Email"
-                  className={classes.contactEmailIcon}
-                />
+              <Grid item classes={{ root: classes.iconContainer }}>
+                <div className={classes.contactEmailIcon}>
+                  <Email color="#fff" />
+                </div>
               </Grid>
               <Grid item>
                 <Typography

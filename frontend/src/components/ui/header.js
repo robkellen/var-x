@@ -26,7 +26,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#fff",
   },
   logo: {
-    fontSize: "3rem",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "3rem",
+    },
   },
   logoText: {
     color: theme.palette.common.offBlack,
@@ -42,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
   tab: {
     ...theme.typography.body1,
-    fontWeight: 600,
+    fontWeight: 500,
   },
   icon: {
     height: "3rem",
@@ -98,7 +100,7 @@ export default function Header({ categories }) {
         <Tab
           component={Link}
           to={route.node.link || `/${route.node.name.toLowerCase()}`}
-          classes={{ root: classes.tabs }}
+          classes={{ root: classes.tab }}
           label={route.node.name}
           key={route.node.strapiId}
         />
