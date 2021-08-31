@@ -32,8 +32,12 @@ const useStyles = makeStyles(theme => ({
       width: "30rem",
     },
     [theme.breakpoints.down("xs")]: {
-      height: "25rem",
-      width: "25rem",
+      height: "20rem",
+      width: "20rem",
+      margin: "2rem 0",
+      "&:hover": {
+        transform: "scale(1.1)",
+      },
     },
   },
   container: {
@@ -44,10 +48,17 @@ const useStyles = makeStyles(theme => ({
       height: "8rem",
       width: "8rem",
     },
+    [theme.breakpoints.down("xs")]: {
+      height: "5rem",
+      width: "5rem",
+    },
   },
   label: {
     [theme.breakpoints.down("sm")]: {
       fontSize: "2.75rem",
+    },
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "2.25rem",
     },
   },
 }))
