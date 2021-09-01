@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import clsx from "clsx"
@@ -22,9 +23,20 @@ const useStyles = makeStyles(theme => ({
     height: "45rem",
     backgroundColor: theme.palette.primary.main,
     marginBottom: "10rem",
+    [theme.breakpoints.down("md")]: {
+      marginTop: "8rem",
+      height: "90rem",
+    },
   },
   formWrapper: {
     height: "100%",
+    [theme.breakpoints.down("md")]: {
+      height: "50%",
+      marginTop: "-8rem",
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   formContainer: {
     height: "100%",
@@ -36,6 +48,12 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    [theme.breakpoints.down("sm")]: {
+      width: "30rem",
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   titleContainer: {
     marginTop: "-4rem",
@@ -54,17 +72,31 @@ const useStyles = makeStyles(theme => ({
   contactInfo: {
     fontSize: "1.5rem",
     marginLeft: "1rem",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "0.75rem",
+    },
   },
   contactIcon: {
     height: "3rem",
     width: "3rem",
+    [theme.breakpoints.down("xs")]: {
+      height: "2rem",
+      width: "2rem",
+    },
   },
   contactEmailIcon: {
     height: "2.25rem",
     width: "3rem",
+    [theme.breakpoints.down("xs")]: {
+      height: "1.25rem",
+      width: "2rem",
+    },
   },
   infoContainer: {
     height: "21.25rem",
+    [theme.breakpoints.down("xs")]: {
+      height: "15.25rem",
+    },
   },
   middleInfo: {
     borderTop: "2px solid #fff",
@@ -77,9 +109,16 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    [theme.breakpoints.down("xs")]: {
+      width: "6rem",
+      height: "5rem",
+    },
   },
   textField: {
     width: "30rem",
+    [theme.breakpoints.down("sm")]: {
+      width: "20rem",
+    },
   },
   input: {
     color: "#fff",
@@ -110,6 +149,11 @@ const useStyles = makeStyles(theme => ({
   buttonDisabled: {
     backgroundColor: theme.palette.grey[500],
   },
+  sendMessage: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "2.5rem",
+    },
+  },
   "@global": {
     ".MuiInput-underline:before, .MuiInput-underline:hover:not(.Mui-disabled):before":
       {
@@ -125,6 +169,10 @@ const ContactPage = () => {
   const classes = useStyles()
   const theme = useTheme()
 
+  // check screen size for sizing elements properly
+  const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
+  const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
+
   // set initial state for form inputs
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -139,6 +187,7 @@ const ContactPage = () => {
         justifyContent="space-around"
         alignItems="center"
         classes={{ root: classes.mainContainer }}
+        direction={matchesMD ? "column" : "row"}
       >
         {/*Contact Form  */}
         <Grid item classes={{ root: classes.formWrapper }}>
@@ -302,7 +351,9 @@ const ContactPage = () => {
                 Object.keys(errors).length !== 4
               }
             >
-              <Typography variant="h4">Send Message</Typography>
+              <Typography variant="h4" classes={{ root: classes.sendMessage }}>
+                Send Message
+              </Typography>
               <img src={send} alt="Send Message" className={classes.sendIcon} />
             </Grid>
           </Grid>
@@ -328,7 +379,8 @@ const ContactPage = () => {
                   variant="h2"
                   classes={{ root: classes.contactInfo }}
                 >
-                  1060 W. Addison St, Chicago, IL 60613
+                  1060 W. Addison St. {matchesXS ? <br /> : null} Chicago, IL
+                  60613
                 </Typography>
               </Grid>
             </Grid>
