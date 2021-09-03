@@ -5,6 +5,7 @@ import IconButton from "@material-ui/core/IconButton"
 import { makeStyles } from "@material-ui/core/styles"
 
 import Sort from "./Sort"
+import Filter from "./Filter"
 
 //images
 import filter from "../../images/filter.svg"
@@ -18,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function FunctionContainer() {
+export default function FunctionContainer({ filterOptions }) {
   const classes = useStyles()
 
   //set state for sort/filter functionality
@@ -49,6 +50,8 @@ export default function FunctionContainer() {
         )
       case "sort":
         return <Sort setOption={setOption} />
+      case "filter":
+        return <Filter setOption={setOption} filterOptions={filterOptions} />
       default:
         return null
     }
