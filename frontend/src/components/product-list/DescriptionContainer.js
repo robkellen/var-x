@@ -1,10 +1,15 @@
 import React, { useState } from "react"
+import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
+import ButtonGroup from "@material-ui/core/ButtonGroup"
+import Button from "@material-ui/core/Button"
 import { makeStyles } from "@material-ui/core/styles"
 
 // images
 import background from "../../images/toolbar-background.svg"
+import ListIcon from "../../images/List"
+import GridIcon from "../../images/Grid"
 
 const useStyles = makeStyles(theme => ({
   description: {
@@ -24,10 +29,29 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 25,
     padding: "1rem",
   },
+  button: {
+    border: `2px solid ${theme.palette.primary.main}`,
+    borderRadius: 25,
+    borderRightColor: `${theme.palette.primary.main} !important`,
+    backgroundColor: "#fff",
+    "&:hover": {
+      backgroundColor: "#fff",
+    },
+    padding: "0.5rem 1.5rem",
+  },
+  selected: {
+    backgroundColor: theme.palette.primary.main,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.light,
+    },
+  },
 }))
 
 export default function FunctionContainer({ name, description }) {
   const classes = useStyles()
+
+  // set initial state for background color of selected button
+  const [layout, setLayout] = useState("grid")
 
   return (
     <Grid
@@ -49,6 +73,30 @@ export default function FunctionContainer({ name, description }) {
         >
           {description}
         </Typography>
+      </Grid>
+      <Grid item>
+        <ButtonGroup>
+          <Button
+            onClick={() => setLayout("list")}
+            classes={{
+              outlined: clsx(classes.button, {
+                [classes.selected]: layout === "list",
+              }),
+            }}
+          >
+            <ListIcon color={layout === "list" ? "#fff" : undefined} />
+          </Button>
+          <Button
+            onClick={() => setLayout("grid")}
+            classes={{
+              outlined: clsx(classes.button, {
+                [classes.selected]: layout === "grid",
+              }),
+            }}
+          >
+            <GridIcon color={layout === "grid" ? "#fff" : undefined} />
+          </Button>
+        </ButtonGroup>
       </Grid>
     </Grid>
   )
