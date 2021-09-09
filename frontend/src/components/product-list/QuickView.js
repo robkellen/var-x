@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import Rating from "../home/Rating"
 import Sizes from "./Sizes"
 import Swatches from "./Swatches"
+import QtyButton from "./QtyButton"
 
 //images
 import frame from "../../images/selected-frame.svg"
@@ -152,6 +153,7 @@ export default function QuickView({
                   selectedColor={selectedColor}
                   setSelectedColor={setSelectedColor}
                 />
+                <QtyButton />
               </Grid>
             </Grid>
           </Grid>
