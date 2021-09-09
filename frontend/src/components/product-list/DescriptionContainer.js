@@ -55,11 +55,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function FunctionContainer({ name, description }) {
+export default function DescriptionContainer({
+  name,
+  description,
+  layout,
+  setLayout,
+}) {
   const classes = useStyles()
-
-  // set initial state for background color of selected button
-  const [layout, setLayout] = useState("grid")
 
   return (
     <Grid

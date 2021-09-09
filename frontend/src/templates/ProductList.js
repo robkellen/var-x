@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Grid from "@material-ui/core/Grid"
 import { graphql } from "gatsby"
 
@@ -12,6 +12,9 @@ export default function ProductList({
     allStrapiProduct: { edges: products },
   },
 }) {
+  // set initial state for background color of selected button
+  const [layout, setLayout] = useState("grid")
+
   return (
     <Layout>
       <Grid container direction="column" alignItems="center">
@@ -19,8 +22,10 @@ export default function ProductList({
           filterOptions={filterOptions}
           name={name}
           description={description}
+          layout={layout}
+          setLayout={setLayout}
         />
-        <ListOfProducts products={products} />
+        <ListOfProducts products={products} layout={layout} />
       </Grid>
     </Layout>
   )
