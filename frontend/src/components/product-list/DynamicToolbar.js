@@ -22,6 +22,7 @@ export default function DynamicToolbar({
   description,
   layout,
   setLayout,
+  setPage,
 }) {
   const classes = useStyles()
 
@@ -41,6 +42,7 @@ export default function DynamicToolbar({
           description={description}
           layout={layout}
           setLayout={setLayout}
+          setPage={setPage}
         />
       )}
     </Grid>

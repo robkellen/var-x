@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react"
 import Grid from "@material-ui/core/Grid"
 import Fab from "@material-ui/core/Fab"
+import Pagination from "@material-ui/lab/Pagination"
 import { graphql } from "gatsby"
 import { makeStyles } from "@material-ui/core/styles"
 
@@ -19,6 +20,22 @@ const useStyles = makeStyles(theme => ({
     width: "5rem",
     height: "5rem",
   },
+  pagination: {
+    alignSelf: "flex-end",
+    marginRight: "2%",
+    marginTop: "-3rem",
+    marginBottom: "4rem",
+  },
+  "@global": {
+    ".MuiPaginationItem-root": {
+      fontFamily: "Montserrat",
+      fontSize: "2rem",
+      color: theme.palette.primary.main,
+      "&.Mui-selected": {
+        color: "#fff",
+      },
+    },
+  },
 }))
 
 export default function ProductList({
@@ -32,6 +49,9 @@ export default function ProductList({
   // set initial state for background color of selected button
   const [layout, setLayout] = useState("grid")
 
+  // set initial page for current page
+  const [page, setPage] = useState(1)
+
   // determine where on page user is to implement functionality to scroll to top Fab
   const scrollRef = useRef(null)
 
@@ -39,6 +59,13 @@ export default function ProductList({
   const scroll = () => {
     scrollRef.current.scrollIntoView({ behavior: "smooth" })
   }
+
+  // set how many items are present on page based on number of products
+  const productsPerPage = layout === "grid" ? 16 : 6
+  let numVariants = 0
+  products.map(product => (numVariants += product.node.variants.length))
+
+  const numPages = Math.ceil(numVariants / productsPerPage)
 
   return (
     <Layout>
@@ -51,8 +78,21 @@ export default function ProductList({
           description={description}
           layout={layout}
           setLayout={setLayout}
+          setPage={setPage}
         />
-        <ListOfProducts products={products} layout={layout} />
+        <ListOfProducts
+          page={page}
+          productsPerPage={productsPerPage}
+          products={products}
+          layout={layout}
+        />
+        <Pagination
+          count={numPages}
+          page={page}
+          onChange={(e, newPage) => setPage(newPage)}
+          color="primary"
+          classes={{ root: classes.pagination }}
+        />
         <Fab onClick={scroll} color="primary" classes={{ root: classes.fab }}>
           ^
         </Fab>
