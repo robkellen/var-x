@@ -61,7 +61,7 @@ export default function ProductFrameList({
   const classes = useStyles()
 
   // set color of image based on selection from color swatch
-  const imageIndex = colorIndex(product, selectedColor)
+  const imageIndex = colorIndex(product, variant, selectedColor)
   const images =
     imageIndex !== -1
       ? product.node.variants[imageIndex].images

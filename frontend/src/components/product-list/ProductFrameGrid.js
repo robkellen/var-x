@@ -45,9 +45,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 // change color of prouct based on selected color in swatch
-export const colorIndex = (product, color) => {
+export const colorIndex = (product, variant, color) => {
   return product.node.variants.indexOf(
-    product.node.variants.filter(variant => variant.color === color)[0]
+    product.node.variants.filter(
+      item => item.color === color && variant.style === item.style
+    )[0]
   )
 }
 
@@ -66,7 +68,7 @@ export default function ProductFrameGrid({
   //set initial state of showing QuickView component
   const [open, setOpen] = useState(false)
 
-  const imageIndex = colorIndex(product, selectedColor)
+  const imageIndex = colorIndex(product, variant, selectedColor)
 
   // product image
   const imgURL =

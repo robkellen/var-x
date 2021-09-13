@@ -38,7 +38,9 @@ export default function ListOfProducts({
     // map over each variants size/color to display them in info section of QuickView
     product.node.variants.map(variant => {
       sizes.push(variant.size)
-      colors.push(variant.color)
+      if (!colors.includes(variant.color)) {
+        colors.push(variant.color)
+      }
     })
 
     return (
