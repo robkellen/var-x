@@ -37,6 +37,11 @@ const useStyles = makeStyles(theme => ({
   invisibility: {
     visibility: "hidden",
   },
+  frameContainer: {
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
 }))
 
 // change color of prouct based on selected color in swatch
@@ -74,7 +79,11 @@ export default function ProductFrameGrid({
   return (
     <Grid
       item
-      classes={{ root: clsx({ [classes.invisibility]: open === true }) }}
+      classes={{
+        root: clsx(classes.frameContainer, {
+          [classes.invisibility]: open === true,
+        }),
+      }}
     >
       <Grid container direction="column" onClick={() => setOpen(true)}>
         <Grid item classes={{ root: classes.frame }}>

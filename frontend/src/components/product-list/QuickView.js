@@ -6,6 +6,7 @@ import Chip from "@material-ui/core/Chip"
 import Dialog from "@material-ui/core/Dialog"
 import DialogContent from "@material-ui/core/DialogContent"
 import { makeStyles } from "@material-ui/core/styles"
+import { Link } from "gatsby"
 
 //import rating to use for each component
 import Rating from "../home/Rating"
@@ -105,7 +106,13 @@ export default function QuickView({
     >
       <DialogContent classes={{ root: classes.selectedFrame }}>
         <Grid container direction="column" alignItems="center">
-          <Grid item>
+          <Grid
+            item
+            component={Link}
+            to={`/${product.node.category.name.toLowerCase()}/${product.node.name
+              .split(" ")[0]
+              .toLowerCase()}`}
+          >
             <img src={url} alt="product" className={classes.productImage} />
           </Grid>
           <Grid
@@ -120,6 +127,10 @@ export default function QuickView({
                 direction="column"
                 justifyContent="space-between"
                 classes={{ root: classes.infoContainer }}
+                component={Link}
+                to={`/${product.node.category.name.toLowerCase()}/${product.node.name
+                  .split(" ")[0]
+                  .toLowerCase()}`}
               >
                 <Grid item>
                   <Typography variant="h4">{name}</Typography>
