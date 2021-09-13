@@ -39,6 +39,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+// change color of prouct based on selected color in swatch
+export const colorIndex = (product, color) => {
+  return product.node.variants.indexOf(
+    product.node.variants.filter(variant => variant.color === color)[0]
+  )
+}
+
 export default function ProductFrameGrid({
   product,
   variant,
@@ -54,8 +61,14 @@ export default function ProductFrameGrid({
   //set initial state of showing QuickView component
   const [open, setOpen] = useState(false)
 
+  const imageIndex = colorIndex(product, selectedColor)
+
   // product image
-  const imgURL = process.env.GATSBY_STRAPI_URL + variant.images[0].url
+  const imgURL =
+    process.env.GATSBY_STRAPI_URL +
+    (imageIndex !== -1
+      ? product.node.variants[imageIndex].images[0].url
+      : variant.images[0].url)
   const productName = product.node.name.split(" ")[0]
 
   return (
