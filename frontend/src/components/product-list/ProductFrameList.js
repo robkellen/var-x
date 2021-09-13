@@ -37,6 +37,9 @@ const useStyles = makeStyles(theme => ({
   sizesAndSwatches: {
     maxWidth: "13rem",
   },
+  chipLabel: {
+    fontSize: "2rem",
+  },
 }))
 
 export default function ProductFrameList({
@@ -89,7 +92,10 @@ export default function ProductFrameList({
             <Rating number={3.5} />
           </Grid>
           <Grid item>
-            <Chip label={`$${variant.price}`} />
+            <Chip
+              label={`$${variant.price}`}
+              classes={{ label: classes.chipLabel }}
+            />
           </Grid>
           <Grid item>
             <Typography variant="h3" classes={{ root: classes.stock }}>

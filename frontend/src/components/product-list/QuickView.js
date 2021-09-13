@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: "5rem",
   },
   toolbar: {
+    position: "relative",
     backgroundColor: theme.palette.primary.main,
     height: "13rem",
     marginTop: "2rem",
@@ -69,6 +70,15 @@ const useStyles = makeStyles(theme => ({
   qtyContainer: {
     marginTop: "2.25rem",
   },
+  infoItem: {
+    position: "absolute",
+    left: "1rem",
+    height: "calc(100% - 1rem)",
+  },
+  actionsItem: {
+    position: "absolute",
+    right: "1rem",
+  },
 }))
 
 export default function QuickView({
@@ -101,10 +111,10 @@ export default function QuickView({
           <Grid
             item
             container
-            justifyContent="space-between"
+            justifyContent="center"
             classes={{ root: classes.toolbar }}
           >
-            <Grid item>
+            <Grid item classes={{ root: classes.infoItem }}>
               <Grid
                 container
                 direction="column"
@@ -138,7 +148,7 @@ export default function QuickView({
             <Grid item classes={{ root: classes.chipContainer }}>
               <Chip label={`$${price}`} classes={{ root: classes.chipRoot }} />
             </Grid>
-            <Grid item>
+            <Grid item classes={{ root: classes.actionsItem }}>
               <Grid container direction="column">
                 <Sizes
                   sizes={sizes}
