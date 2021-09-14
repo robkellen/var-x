@@ -23,6 +23,9 @@ const useStyles = makeStyles(theme => ({
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     height: "28rem",
+    [theme.breakpoints.down("xs")]: {
+      marginTop: "5rem",
+    },
   },
   info: {
     backgroundColor: theme.palette.primary.main,
