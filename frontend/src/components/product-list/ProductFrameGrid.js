@@ -2,7 +2,9 @@ import React, { useState } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
+import { navigate } from "gatsby"
 
 import QuickView from "./QuickView"
 
@@ -68,6 +70,14 @@ export default function ProductFrameGrid({
   //set initial state of showing QuickView component
   const [open, setOpen] = useState(false)
 
+  // determine if user is on screen size of medium or smaller to disable QuickView component and just navigate user to product page
+  const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
+
+  // if user is on screen size above medium with QuickView open, but shrinks screen to smaller size, then close QuickView
+  if (matchesMD && open) {
+    setOpen(false)
+  }
+
   const imageIndex = colorIndex(product, variant, selectedColor)
 
   // product image
@@ -87,7 +97,19 @@ export default function ProductFrameGrid({
         }),
       }}
     >
-      <Grid container direction="column" onClick={() => setOpen(true)}>
+      <Grid
+        container
+        direction="column"
+        onClick={() =>
+          matchesMD
+            ? navigate(
+                `/${product.node.category.name.toLowerCase()}/${product.node.name
+                  .split(" ")[0]
+                  .toLowerCase()}`
+              )
+            : setOpen(true)
+        }
+      >
         <Grid item classes={{ root: classes.frame }}>
           <img src={imgURL} alt={productName} className={classes.product} />
         </Grid>
