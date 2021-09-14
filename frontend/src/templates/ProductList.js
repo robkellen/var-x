@@ -25,6 +25,9 @@ const useStyles = makeStyles(theme => ({
     marginRight: "2%",
     marginTop: "-3rem",
     marginBottom: "4rem",
+    [theme.breakpoints.down("md")]: {
+      marginTop: "1rem",
+    },
   },
   "@global": {
     ".MuiPaginationItem-root": {
