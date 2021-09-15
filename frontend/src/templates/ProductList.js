@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function ProductList({
-  pageContext: { filterOptions, name, description },
+  pageContext: { filterOptions: options, name, description },
   data: {
     allStrapiProduct: { edges: products },
   },
@@ -54,6 +54,9 @@ export default function ProductList({
 
   // set initial page for current page
   const [page, setPage] = useState(1)
+
+  // set initial state for how products are filtered
+  const [filterOptions, setFilterOptions] = useState(options)
 
   // determine where on page user is to implement functionality to scroll to top Fab
   const scrollRef = useRef(null)
@@ -77,6 +80,7 @@ export default function ProductList({
         <div ref={scrollRef} />
         <DynamicToolbar
           filterOptions={filterOptions}
+          setFilterOptions={setFilterOptions}
           name={name}
           description={description}
           layout={layout}
@@ -88,6 +92,7 @@ export default function ProductList({
           productsPerPage={productsPerPage}
           products={products}
           layout={layout}
+          filterOptions={filterOptions}
         />
         <Pagination
           count={numPages}
@@ -120,6 +125,7 @@ export const query = graphql`
             price
             size
             style
+            colorLabel
             images {
               url
             }

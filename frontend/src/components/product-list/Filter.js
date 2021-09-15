@@ -29,8 +29,17 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Filter({ setOption, filterOptions }) {
+export default function Filter({ setOption, filterOptions, setFilterOptions }) {
   const classes = useStyles()
+
+  // function to handle selection of filter options and display results accordingly
+  const handleFilter = (option, i) => {
+    const newFilters = { ...filterOptions }
+    // toggle value of checked between true/false
+    newFilters[option][i].checked = !newFilters[option][i].checked
+
+    setFilterOptions(newFilters)
+  }
 
   return (
     <Grid
@@ -62,16 +71,17 @@ export default function Filter({ setOption, filterOptions }) {
                   <Grid item>
                     <FormControl>
                       <FormGroup>
-                        {filterOptions[option].map(({ label, checked }) => (
+                        {filterOptions[option].map(({ label, checked }, i) => (
                           <FormControlLabel
                             classes={{ label: classes.checkbox }}
                             key={label}
                             label={label}
                             control={
                               <CheckBox
+                                classes={{ root: classes.checkbox }}
                                 checked={checked}
                                 name={label}
-                                classes={{ root: classes.checkbox }}
+                                onChange={() => handleFilter(option, i)}
                               />
                             }
                           />

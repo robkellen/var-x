@@ -23,6 +23,7 @@ export default function DynamicToolbar({
   layout,
   setLayout,
   setPage,
+  setFilterOptions,
 }) {
   const classes = useStyles()
 
@@ -35,6 +36,7 @@ export default function DynamicToolbar({
         option={option}
         setOption={setOption}
         filterOptions={filterOptions}
+        setFilterOptions={setFilterOptions}
       />
       {option === null && (
         <DescriptionContainer
