@@ -53,6 +53,7 @@ export default function ListOfProducts({
   page,
   productsPerPage,
   filterOptions,
+  content,
 }) {
   const classes = useStyles({ layout })
 
@@ -88,75 +89,7 @@ export default function ListOfProducts({
     )
   }
 
-  let content = []
-  products.map((product, i) =>
-    product.node.variants.map(variant => content.push({ product: i, variant }))
-  )
 
-  // set initial status of our items being filtered as false
-  let isFiltered = false
-  // use this to store list of currently active filters
-  let filters = {}
-  let filteredProducts = []
-
-  // test if value of item selected is equal to value of variant option and display that item if true
-  Object.keys(filterOptions)
-    .filter(option => filterOptions[option] !== null)
-    .map(option => {
-      filterOptions[option].forEach(value => {
-        if (value.checked) {
-          isFiltered = true
-          if (filters[option] === undefined) {
-            filters[option] = []
-          }
-          if (!filters[option].includes(value)) {
-            filters[option].push(value)
-          }
-
-          content.forEach(item => {
-            if (option === "Color") {
-              if (
-                item.variant.colorLabel === value.label &&
-                !filteredProducts.includes(item)
-              ) {
-                filteredProducts.push(item)
-              }
-              // filter by style
-            } else if (
-              item.variant[option.toLowerCase()] === value.label &&
-              !filteredProducts.includes(item)
-            ) {
-              filteredProducts.push(item)
-            }
-          })
-        }
-      })
-    })
-
-  //Check active filters and for each one get rid of all products that don't match every selected filter category
-  Object.keys(filters).forEach(filter => {
-    filteredProducts = filteredProducts.filter(item => {
-      let valid
-
-      filters[filter].some(value => {
-        // check for color if hats are being filtered
-        if (filter === "Color") {
-          if (item.variant.colorLabel === value.label) {
-            valid = item
-          }
-          // check for size/style if filtering for hats/hoodies
-        } else if (item.variant[filter.toLowerCase()] === value.label) {
-          valid = item
-        }
-      })
-
-      return valid
-    })
-  })
-
-  if (isFiltered) {
-    content = filteredProducts
-  }
 
   return (
     <Grid

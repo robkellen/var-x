@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
 import Fab from "@material-ui/core/Fab"
 import Pagination from "@material-ui/lab/Pagination"
@@ -66,12 +66,85 @@ export default function ProductList({
     scrollRef.current.scrollIntoView({ behavior: "smooth" })
   }
 
+  // any time the filterOptions changes set the page number back to 1
+  useEffect(() => {
+    setPage(1)
+  }, [filterOptions, layout])
+
   // set how many items are present on page based on number of products
   const productsPerPage = layout === "grid" ? 16 : 6
-  let numVariants = 0
-  products.map(product => (numVariants += product.node.variants.length))
 
-  const numPages = Math.ceil(numVariants / productsPerPage)
+  let content = []
+  products.map((product, i) =>
+    product.node.variants.map(variant => content.push({ product: i, variant }))
+  )
+
+  // set initial status of our items being filtered as false
+  let isFiltered = false
+  // use this to store list of currently active filters
+  let filters = {}
+  let filteredProducts = []
+
+  // test if value of item selected is equal to value of variant option and display that item if true
+  Object.keys(filterOptions)
+    .filter(option => filterOptions[option] !== null)
+    .map(option => {
+      filterOptions[option].forEach(value => {
+        if (value.checked) {
+          isFiltered = true
+          if (filters[option] === undefined) {
+            filters[option] = []
+          }
+          if (!filters[option].includes(value)) {
+            filters[option].push(value)
+          }
+
+          content.forEach(item => {
+            if (option === "Color") {
+              if (
+                item.variant.colorLabel === value.label &&
+                !filteredProducts.includes(item)
+              ) {
+                filteredProducts.push(item)
+              }
+              // filter by style
+            } else if (
+              item.variant[option.toLowerCase()] === value.label &&
+              !filteredProducts.includes(item)
+            ) {
+              filteredProducts.push(item)
+            }
+          })
+        }
+      })
+    })
+
+  //Check active filters and for each one get rid of all products that don't match every selected filter category
+  Object.keys(filters).forEach(filter => {
+    filteredProducts = filteredProducts.filter(item => {
+      let valid
+
+      filters[filter].some(value => {
+        // check for color if hats are being filtered
+        if (filter === "Color") {
+          if (item.variant.colorLabel === value.label) {
+            valid = item
+          }
+          // check for size/style if filtering for hats/hoodies
+        } else if (item.variant[filter.toLowerCase()] === value.label) {
+          valid = item
+        }
+      })
+
+      return valid
+    })
+  })
+
+  if (isFiltered) {
+    content = filteredProducts
+  }
+
+  const numPages = Math.ceil(content.length / productsPerPage)
 
   return (
     <Layout>
@@ -85,7 +158,6 @@ export default function ProductList({
           description={description}
           layout={layout}
           setLayout={setLayout}
-          setPage={setPage}
         />
         <ListOfProducts
           page={page}
@@ -93,6 +165,7 @@ export default function ProductList({
           products={products}
           layout={layout}
           filterOptions={filterOptions}
+          content={content}
         />
         <Pagination
           count={numPages}

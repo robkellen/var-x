@@ -81,7 +81,6 @@ export default function DescriptionContainer({
   description,
   layout,
   setLayout,
-  setPage,
 }) {
   const classes = useStyles()
 
@@ -90,7 +89,6 @@ export default function DescriptionContainer({
 
   // reset page number if user toggles between grid/list view of products
   const changeLayout = option => {
-    setPage(1)
     setLayout(option)
   }
 
