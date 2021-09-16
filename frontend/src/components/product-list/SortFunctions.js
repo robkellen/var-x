@@ -1,4 +1,4 @@
-export const alphabetic = (data, direction) => {
+export const alphabetic = (data, direction) =>
   data.sort((a, b) => {
     const first = a.node.name.toLowerCase()
     const second = b.node.name.toLowerCase()
@@ -12,9 +12,8 @@ export const alphabetic = (data, direction) => {
     if (x > y) return 1
     return 0
   })
-}
 
-export const time = (data, direction) => {
+export const time = (data, direction) =>
   data.sort((a, b) => {
     const first = new Date(a.node.createdAt)
     const second = new Date(b.node.createdAt)
@@ -26,9 +25,8 @@ export const time = (data, direction) => {
     if (x > y) return 1
     return 0
   })
-}
 
-export const price = (data, direction) => {
+export const price = (data, direction) =>
   data.sort((a, b) => {
     const first = a.node.variants[0].price
     const second = b.node.variants[0].price
@@ -40,4 +38,3 @@ export const price = (data, direction) => {
     if (x > y) return 1
     return 0
   })
-}
