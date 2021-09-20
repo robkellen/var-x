@@ -1,11 +1,16 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
+import Chip from "@material-ui/core/Chip"
 import Button from "@material-ui/core/Button"
 import { makeStyles } from "@material-ui/core/styles"
 
 import Rating from "../home/Rating"
+import Sizes from "../product-list/Sizes"
+import Swatches from "../product-list/Swatches"
+import QtyButton from "../product-list/QtyButton"
+import { colorIndex } from "../product-list/ProductFrameGrid"
 
 // images
 import favorite from "../../images/favorite.svg"
@@ -33,12 +38,42 @@ const useStyles = makeStyles(theme => ({
   },
   descriptionContainer: {
     backgroundColor: theme.palette.secondary.main,
+    overflowY: "auto",
+    padding: "0.5rem 1rem",
   },
   name: {
     color: "#fff",
   },
   reviewButton: {
     textTransform: "none",
+  },
+  detailsContainer: {
+    padding: "0.5rem 1rem",
+  },
+  chipContainer: {
+    marginTop: "1rem",
+  },
+  chipRoot: {
+    height: "3rem",
+    width: "9rem",
+    borderRadius: 50,
+  },
+  chipLabel: {
+    fontSize: "2rem",
+  },
+  stock: {
+    color: "#fff",
+  },
+  sizesAndSwatches: {
+    maxWidth: "13rem",
+  },
+  actionsContainer: {
+    padding: "0 1rem",
+  },
+  "@global": {
+    ".MuiButtonGroup-groupedOutlinedVertical:not(:first-child)": {
+      marginTop: 0,
+    },
   },
 }))
 
@@ -50,6 +85,33 @@ export default function ProductInfo({
   setSelectedVariant,
 }) {
   const classes = useStyles()
+
+  // set initial state for size/color of product
+  const [selectedSize, setSelectedSize] = useState(null)
+  const [selectedColor, setSelectedColor] = useState(null)
+
+  // define list of available colors to select from
+  const imageIndex = colorIndex(
+    { node: { variants } },
+    variants[selectedVariant],
+    selectedColor
+  )
+
+  const sizes = []
+  const colors = []
+  variants.map(variant => {
+    sizes.push(variant.size)
+
+    if (!colors.includes(variant.color)) {
+      colors.push(variant.color)
+    }
+  })
+
+  useEffect(() => {
+    if (imageIndex !== -1) {
+      setSelectedVariant(imageIndex)
+    }
+  }, [imageIndex])
 
   return (
     <Grid
@@ -90,8 +152,9 @@ export default function ProductInfo({
         <Grid
           item
           container
+          justifyContent="space-between"
           classes={{
-            root: classes.sectionContainer,
+            root: clsx(classes.sectionContainer, classes.detailsContainer),
           }}
         >
           <Grid item>
@@ -110,11 +173,17 @@ export default function ProductInfo({
                     variant="body2"
                     classes={{ root: classes.reviewButton }}
                   >
-                    Leave a Review >
+                    Leave a Review {">"}
                   </Typography>
                 </Button>
               </Grid>
             </Grid>
+          </Grid>
+          <Grid item classes={{ root: classes.chipContainer }}>
+            <Chip
+              classes={{ root: classes.chipRoot, label: classes.chipLabel }}
+              label={`$${variants[selectedVariant].price}`}
+            />
           </Grid>
         </Grid>
         <Grid
@@ -123,14 +192,46 @@ export default function ProductInfo({
           classes={{
             root: clsx(classes.sectionContainer, classes.descriptionContainer),
           }}
-        ></Grid>
+        >
+          <Grid item>
+            <Typography variant="h5">Description</Typography>
+            <Typography variant="body2">{description}</Typography>
+          </Grid>
+        </Grid>
         <Grid
           item
           container
+          justifyContent="space-between"
+          alignItems="center"
           classes={{
-            root: classes.sectionContainer,
+            root: clsx(classes.actionsContainer, classes.sectionContainer),
           }}
-        ></Grid>
+        >
+          <Grid item>
+            <Grid container direction="column">
+              <Grid item classes={{ root: classes.sizesAndSwatches }}>
+                <Sizes
+                  sizes={sizes}
+                  selectedSize={selectedSize}
+                  setSelectedSize={setSelectedSize}
+                />
+                <Swatches
+                  colors={colors}
+                  selectedColor={selectedColor}
+                  setSelectedColor={setSelectedColor}
+                />
+              </Grid>
+              <Grid item>
+                <Typography variant="h3" classes={{ root: classes.stock }}>
+                  12 Currently in Stock
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item>
+            <QtyButton />
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   )
