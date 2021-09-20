@@ -75,6 +75,11 @@ export default function ListOfProducts({
       }
     })
 
+    // Determine if selected product has different styles (i.e. shirts)
+    const hasStyles = product.node.variants.some(
+      variant => variant.style !== null
+    )
+
     return (
       <Frame
         variant={variant}
@@ -85,11 +90,10 @@ export default function ListOfProducts({
         selectedColor={selectedColor}
         setSelectedSize={setSelectedSize}
         setSelectedColor={setSelectedColor}
+        hasStyles={hasStyles}
       />
     )
   }
-
-
 
   return (
     <Grid

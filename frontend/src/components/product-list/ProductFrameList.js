@@ -66,6 +66,7 @@ export default function ProductFrameList({
   selectedColor,
   setSelectedSize,
   setSelectedColor,
+  hasStyles,
 }) {
   const classes = useStyles()
 
@@ -93,7 +94,7 @@ export default function ProductFrameList({
             component={Link}
             to={`/${product.node.category.name.toLowerCase()}/${product.node.name
               .split(" ")[0]
-              .toLowerCase()}`}
+              .toLowerCase()}${hasStyles ? `?style=${variant.style}` : ""}`}
           >
             <img
               className={classes.productImage}
@@ -118,7 +119,7 @@ export default function ProductFrameList({
           component={Link}
           to={`/${product.node.category.name.toLowerCase()}/${product.node.name
             .split(" ")[0]
-            .toLowerCase()}`}
+            .toLowerCase()}${hasStyles ? `?style=${variant.style}` : ""}`}
         >
           <Grid item>
             <Typography variant="h4">
