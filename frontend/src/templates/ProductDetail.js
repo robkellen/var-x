@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import Layout from "../components/ui/layout"
 import ProductImages from "../components/product-detail/ProductImages"
@@ -12,6 +13,9 @@ export default function ProductDetail({
   // set initial state of which variant/image of the product we want
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [selectedImage, setSelectedImage] = useState(0)
+
+  //determine if screen size is medium to adjust layout of product/info
+  const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
 
   const params = new URLSearchParams(window.location.search)
   const style = params.get("style")
@@ -56,7 +60,7 @@ export default function ProductDetail({
   return (
     <Layout>
       <Grid container direction="column">
-        <Grid item container>
+        <Grid item container direction={matchesMD ? "column" : "row"}>
           <ProductImages
             images={variants[selectedVariant].images}
             selectedImage={selectedImage}
