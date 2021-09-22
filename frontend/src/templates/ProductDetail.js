@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid"
 import Layout from "../components/ui/layout"
 import ProductImages from "../components/product-detail/ProductImages"
 import ProductInfo from "../components/product-detail/ProductInfo"
+import RecentlyViewed from "../components/product-detail/RecentlyViewed"
 
 export default function ProductDetail({
   pageContext: { name, id, category, description, variants, product },
@@ -60,6 +61,7 @@ export default function ProductDetail({
             setSelectedVariant={setSelectedVariant}
           />
         </Grid>
+        <RecentlyViewed products={JSON.parse(window.localStorage.getItem("recentlyViewed"))} />
       </Grid>
     </Layout>
   )

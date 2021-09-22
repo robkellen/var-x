@@ -77,6 +77,7 @@ export default function ProductFrameGrid({
   setSelectedSize,
   setSelectedColor,
   hasStyles,
+  disableQuickView,
 }) {
   const classes = useStyles()
 
@@ -114,7 +115,7 @@ export default function ProductFrameGrid({
         container
         direction="column"
         onClick={() =>
-          matchesMD
+          matchesMD || disableQuickView
             ? navigate(
                 `/${product.node.category.name.toLowerCase()}/${product.node.name
                   .split(" ")[0]
