@@ -20,6 +20,8 @@ export default function ProductDetail({
       variant => variant.style === params.get("style")
     )[0]
 
+    const variantIndex = variants.indexOf(styledVariant)
+
     // get recently viewed items from local storage
     let recentlyViewed = JSON.parse(
       window.localStorage.getItem("recentlyViewed")
@@ -29,11 +31,17 @@ export default function ProductDetail({
       if (recentlyViewed.length === 10) {
         recentlyViewed.shift()
       }
-      if (!recentlyViewed.some(product => product.node.name === name)) {
-        recentlyViewed.push(product)
+      if (
+        !recentlyViewed.some(
+          product =>
+            product.node.name === name &&
+            product.selectedVariant === variantIndex
+        )
+      ) {
+        recentlyViewed.push({ ...product, selectedVariant: variantIndex })
       }
     } else {
-      recentlyViewed = [product]
+      recentlyViewed = [{ ...product, selectedVariant: variantIndex }]
     }
 
     window.localStorage.setItem(
@@ -41,7 +49,7 @@ export default function ProductDetail({
       JSON.stringify(recentlyViewed)
     )
 
-    setSelectedVariant(variants.indexOf(styledVariant))
+    setSelectedVariant(variantIndex)
   }, [])
 
   return (
@@ -61,7 +69,9 @@ export default function ProductDetail({
             setSelectedVariant={setSelectedVariant}
           />
         </Grid>
-        <RecentlyViewed products={JSON.parse(window.localStorage.getItem("recentlyViewed"))} />
+        <RecentlyViewed
+          products={JSON.parse(window.localStorage.getItem("recentlyViewed"))}
+        />
       </Grid>
     </Layout>
   )
