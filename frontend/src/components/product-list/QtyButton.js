@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -53,11 +53,36 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function QtyButton() {
+export default function QtyButton({ stock, selectedVariant }) {
   const classes = useStyles()
 
   // set initial state to hold quantity of items
   const [qty, setQty] = useState(1)
+
+  // handler to determine quantity of items to add/subtract in cart
+  const handleChange = direction => {
+    // disable add button if number of items user wants to add is at the max number of stock
+    if (qty === stock[selectedVariant].qty && direction === "up") {
+      return null
+    }
+
+    // disable subtract button if number of items user wants to add is at 1
+    if (qty === 1 && direction === "down") {
+      return null
+    }
+
+    const newQty = direction === "up" ? qty + 1 : qty - 1
+    setQty(newQty)
+  }
+
+  // set selected qty value back to 1 whenever user changes variant of item displayed
+  useEffect(() => {
+    if (stock === null || stock === -1) {
+      return undefined
+    } else if (qty > stock[selectedVariant].qty) {
+      setQty(stock[selectedVariant].qty)
+    }
+  }, [stock, selectedVariant])
 
   return (
     <Grid item>
@@ -69,7 +94,7 @@ export default function QtyButton() {
         </Button>
         <ButtonGroup orientation="vertical">
           <Button
-            onClick={() => setQty(qty + 1)}
+            onClick={() => handleChange("up")}
             classes={{ root: classes.editButtons }}
           >
             <Typography variant="h3" classes={{ root: classes.qtyText }}>
@@ -77,7 +102,7 @@ export default function QtyButton() {
             </Typography>
           </Button>
           <Button
-            onClick={() => setQty(qty - 1)}
+            onClick={() => handleChange("down")}
             classes={{ root: clsx(classes.editButtons, classes.minusButton) }}
           >
             <Typography
