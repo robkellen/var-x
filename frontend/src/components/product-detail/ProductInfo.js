@@ -128,7 +128,9 @@ export default function ProductInfo({
   const classes = useStyles()
 
   // set initial state for size/color of product
-  const [selectedSize, setSelectedSize] = useState(null)
+  const [selectedSize, setSelectedSize] = useState(
+    variants[selectedVariant].size
+  )
   const [selectedColor, setSelectedColor] = useState(null)
 
   // determine styling for product info section if screen size is extra small
@@ -146,11 +148,30 @@ export default function ProductInfo({
   variants.map(variant => {
     sizes.push(variant.size)
 
-    if (!colors.includes(variant.color)) {
+    if (
+      !colors.includes(variant.color) &&
+      variant.size === selectedSize &&
+      variant.style === variants[selectedVariant].style
+    ) {
       colors.push(variant.color)
     }
   })
 
+  // if user selects a new size of product default to the first color available in that product
+  useEffect(() => {
+    setSelectedColor(null)
+
+    const newVariant = variants.find(
+      variant =>
+        variant.size === selectedSize &&
+        variant.style === variants[selectedVariant].style &&
+        variant.color === colors[0]
+    )
+
+    setSelectedVariant(variants.indexOf(newVariant))
+  }, [selectedSize])
+
+  // set the image of the product to the selected variant when the page loads
   useEffect(() => {
     if (imageIndex !== -1) {
       setSelectedVariant(imageIndex)
