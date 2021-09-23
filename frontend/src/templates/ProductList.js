@@ -94,7 +94,7 @@ export default function ProductList({
 
   // determine which sort option to apply
   const selectedSort = sortOptions.filter(option => option.active)[0]
-  console.log(selectedSort)
+
   const sortedProducts = selectedSort.function(products)
 
   sortedProducts.map((product, i) =>

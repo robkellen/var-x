@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useQuery, gql } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import Grid from "@material-ui/core/Grid"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
@@ -8,16 +8,7 @@ import ProductImages from "../components/product-detail/ProductImages"
 import ProductInfo from "../components/product-detail/ProductInfo"
 import RecentlyViewed from "../components/product-detail/RecentlyViewed"
 
-// query for product quantity details
-const GET_DETAILS = gql`
-  query getDetails($id: ID!) {
-    product(id: $id) {
-      variants {
-        qty
-      }
-    }
-  }
-`
+import { GET_DETAILS } from "../apollo/queries"
 
 export default function ProductDetail({
   pageContext: { name, id, category, description, variants, product },

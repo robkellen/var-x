@@ -8,11 +8,11 @@ import DialogContent from "@material-ui/core/DialogContent"
 import { makeStyles } from "@material-ui/core/styles"
 import { Link } from "gatsby"
 
-//import rating to use for each component
 import Rating from "../home/Rating"
 import Sizes from "./Sizes"
 import Swatches from "./Swatches"
 import QtyButton from "./QtyButton"
+import { getStockDisplay } from "../product-detail/ProductInfo"
 
 //images
 import frame from "../../images/selected-frame.svg"
@@ -97,8 +97,16 @@ export default function QuickView({
   setSelectedSize,
   setSelectedColor,
   hasStyles,
+  stock,
+  imageIndex,
 }) {
   const classes = useStyles()
+
+  // handle display of stock for selected variant of the product shown
+  const selectedVariant =
+    imageIndex === -1 ? product.node.variants.indexOf(variant) : imageIndex
+
+  const stockDisplay = getStockDisplay(stock, selectedVariant)
 
   return (
     <Dialog
@@ -140,7 +148,7 @@ export default function QuickView({
                 </Grid>
                 <Grid item>
                   <Typography variant="h3" classes={{ root: classes.stock }}>
-                    12 currently in stock
+                    {stockDisplay}
                   </Typography>
                   <Button classes={{ root: classes.detailButton }}>
                     <Typography

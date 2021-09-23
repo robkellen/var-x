@@ -98,6 +98,25 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+// handle displaying stock quantity
+export const getStockDisplay = (stock, variant) => {
+  switch (stock) {
+    case undefined:
+    case null:
+      return "Loading Inventory..."
+
+    case -1:
+      return "Error Loading Inventory"
+
+    default:
+      if (stock[variant].qty === 0) {
+        return "Currently Out Of Stock"
+      } else {
+        return `${stock[variant].qty} Currently In Stock`
+      }
+  }
+}
+
 export default function ProductInfo({
   name,
   description,
@@ -139,24 +158,7 @@ export default function ProductInfo({
   }, [imageIndex])
 
   // handle displaying stock quantity
-  let stockDisplay
-
-  switch (stock) {
-    case undefined:
-    case null:
-      stockDisplay = "Loading Inventory..."
-      break
-    case -1:
-      stockDisplay = "Error Loading Inventory"
-      break
-    default:
-      if (stock[selectedVariant].qty === 0) {
-        stockDisplay = "Currently Out Of Stock"
-      } else {
-        stockDisplay = `${stock[selectedVariant].qty} Currently In Stock`
-      }
-      break
-  }
+  const stockDisplay = getStockDisplay(stock, selectedVariant)
 
   return (
     <Grid
