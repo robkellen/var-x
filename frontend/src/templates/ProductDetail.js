@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useQuery, gql } from "@apollo/client"
 import Grid from "@material-ui/core/Grid"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
@@ -6,6 +7,17 @@ import Layout from "../components/ui/layout"
 import ProductImages from "../components/product-detail/ProductImages"
 import ProductInfo from "../components/product-detail/ProductInfo"
 import RecentlyViewed from "../components/product-detail/RecentlyViewed"
+
+// query for product quantity details
+const GET_DETAILS = gql`
+  query getDetails($id: ID!) {
+    product(id: $id) {
+      variants {
+        qty
+      }
+    }
+  }
+`
 
 export default function ProductDetail({
   pageContext: { name, id, category, description, variants, product },
@@ -19,6 +31,14 @@ export default function ProductDetail({
 
   const params = new URLSearchParams(window.location.search)
   const style = params.get("style")
+
+  // on page load query for product quantities for each variant
+  const { loading, error, data } = useQuery(GET_DETAILS, {
+    variables: { id },
+  })
+
+  console.log(data)
+
   // on page load pull style from url search paramater to determine the style of the product to display and set images equal to
   useEffect(() => {
     const styledVariant = variants.filter(
