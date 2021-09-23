@@ -22,9 +22,10 @@ const GET_DETAILS = gql`
 export default function ProductDetail({
   pageContext: { name, id, category, description, variants, product },
 }) {
-  // set initial state of which variant/image of the product we want
+  // set initial state of which variant/image/quantity of the product we want
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [selectedImage, setSelectedImage] = useState(0)
+  const [stock, setStock] = useState(null)
 
   //determine if screen size is medium to adjust layout of product/info
   const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
@@ -37,7 +38,13 @@ export default function ProductDetail({
     variables: { id },
   })
 
-  console.log(data)
+  useEffect(() => {
+    if (error) {
+      setStock(-1)
+    } else if (data) {
+      setStock(data.product.variants)
+    }
+  }, [error, data])
 
   // on page load pull style from url search paramater to determine the style of the product to display and set images equal to
   useEffect(() => {
@@ -92,6 +99,7 @@ export default function ProductDetail({
             variants={variants}
             selectedVariant={selectedVariant}
             setSelectedVariant={setSelectedVariant}
+            stock={stock}
           />
         </Grid>
         <RecentlyViewed
