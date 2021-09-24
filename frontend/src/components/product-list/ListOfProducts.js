@@ -65,7 +65,7 @@ export default function ListOfProducts({
   // contorls view between grid/list based on selected button
   const FrameHelper = ({ Frame, product, variant }) => {
     // set initial state for selected size/color/quantity/variant of product
-    const [selectedSize, setSelectedSize] = useState(variant.size)
+    const [selectedSize, setSelectedSize] = useState(null)
     const [selectedColor, setSelectedColor] = useState(null)
     const [selectedVariant, setSelectedVariant] = useState(null)
     const [stock, setStock] = useState(null)
@@ -85,6 +85,9 @@ export default function ListOfProducts({
 
     // if user selects a new size of product default to the first color available in that product
     useEffect(() => {
+      // this if statement stops this effect on initial page load.  this useEffect will only fire if selected size is changed from initial variant.size
+      if (selectedSize === null) return undefined
+
       setSelectedColor(null)
 
       const newVariant = product.node.variants.find(
@@ -104,7 +107,7 @@ export default function ListOfProducts({
       sizes.push(item.size)
       if (
         !colors.includes(item.color) &&
-        item.size === selectedSize &&
+        item.size === (selectedSize || variant.size) &&
         item.style === variant.style
       ) {
         colors.push(item.color)
@@ -124,7 +127,7 @@ export default function ListOfProducts({
         colors={colors}
         selectedSize={selectedSize}
         selectedColor={selectedColor}
-        setSelectedSize={setSelectedSize}
+        setSelectedSize={setSelectedSize || variant.size}
         setSelectedColor={setSelectedColor}
         hasStyles={hasStyles}
         stock={stock}
