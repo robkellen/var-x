@@ -64,9 +64,10 @@ export default function ListOfProducts({
   const matchesSM = useMediaQuery(theme => theme.breakpoints.down("sm"))
   // contorls view between grid/list based on selected button
   const FrameHelper = ({ Frame, product, variant }) => {
-    // set initial state for selected size/color/quantity of product
-    const [selectedSize, setSelectedSize] = useState(null)
+    // set initial state for selected size/color/quantity/variant of product
+    const [selectedSize, setSelectedSize] = useState(variant.size)
     const [selectedColor, setSelectedColor] = useState(null)
+    const [selectedVariant, setSelectedVariant] = useState(null)
     const [stock, setStock] = useState(null)
 
     // on page load query for product quantities for each variant
@@ -82,13 +83,31 @@ export default function ListOfProducts({
       }
     }, [error, data])
 
+    // if user selects a new size of product default to the first color available in that product
+    useEffect(() => {
+      setSelectedColor(null)
+
+      const newVariant = product.node.variants.find(
+        item =>
+          item.size === selectedSize &&
+          item.style === variant.style &&
+          item.color === colors[0]
+      )
+
+      setSelectedVariant(newVariant)
+    }, [selectedSize])
+
     var sizes = []
     var colors = []
     // map over each variants size/color to display them in info section of QuickView
-    product.node.variants.map(variant => {
-      sizes.push(variant.size)
-      if (!colors.includes(variant.color)) {
-        colors.push(variant.color)
+    product.node.variants.map(item => {
+      sizes.push(item.size)
+      if (
+        !colors.includes(item.color) &&
+        item.size === selectedSize &&
+        item.style === variant.style
+      ) {
+        colors.push(item.color)
       }
     })
 
@@ -99,7 +118,7 @@ export default function ListOfProducts({
 
     return (
       <Frame
-        variant={variant}
+        variant={selectedVariant || variant}
         product={product}
         sizes={sizes}
         colors={colors}
