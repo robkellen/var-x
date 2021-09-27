@@ -60,18 +60,9 @@ const useStyles = makeStyles(theme => ({
   reset: {
     marginTop: "-4rem",
   },
-  "@global": {
-    ".MuiInput-underline:before, .MuiInput-underline:hover:not(.Mui-disabled):before":
-      {
-        borderBottom: `2px solid ${theme.palette.secondary.main}`,
-      },
-    ".MuiInput-underline:after": {
-      borderBottom: `2px solid ${theme.palette.primary.main}`,
-    },
-  },
 }))
 
-export default function Login() {
+export default function Login({ steps, setSelectedStep }) {
   const classes = useStyles()
 
   // set state to hold values from text fields
@@ -108,6 +99,13 @@ export default function Login() {
         />
       ),
     },
+  }
+
+  // navigate user to the Sign Up page
+  const navigateSignUp = () => {
+    const signUp = steps.find(step => step.label === "Sign Up")
+
+    setSelectedStep(steps.indexOf(signUp))
   }
 
   return (
@@ -189,7 +187,7 @@ export default function Login() {
       )}
       <Grid item container justifyContent="space-between">
         <Grid item>
-          <IconButton>
+          <IconButton onClick={navigateSignUp}>
             <img src={addUserIcon} alt="sign up" />
           </IconButton>
         </Grid>
