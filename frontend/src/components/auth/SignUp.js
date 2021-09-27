@@ -81,6 +81,13 @@ export default function SignUp({ steps, setSelectedStep }) {
     }
   }
 
+  // handle completion of sign up form
+  const handleComplete = () => {
+    const complete = steps.find(step => step.label === "Complete")
+
+    setSelectedStep(steps.indexOf(complete))
+  }
+
   const nameField = {
     name: {
       helperText: "you must enter a name",
@@ -109,6 +116,7 @@ export default function SignUp({ steps, setSelectedStep }) {
         <Button
           variant="contained"
           color="secondary"
+          onClick={() => info ? handleComplete() : null}
           classes={{
             root: clsx(classes.facebookSignUp, {
               [classes.removeButtonMargin]: info,
