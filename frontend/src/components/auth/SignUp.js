@@ -115,6 +115,7 @@ export default function SignUp({ steps, setSelectedStep }) {
     ? EmailPassword(classes, false, false, visible, setVisible)
     : nameField
 
+    // set button to disabled if text fields have errors
   const disabled =
     Object.keys(errors).some(error => errors[error] === true) ||
     Object.keys(errors).length !== Object.keys(values).length
