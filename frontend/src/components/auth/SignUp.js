@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import clsx from "clsx"
+import axios from "axios"
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
@@ -83,9 +84,23 @@ export default function SignUp({ steps, setSelectedStep }) {
 
   // handle completion of sign up form
   const handleComplete = () => {
-    const complete = steps.find(step => step.label === "Complete")
+    // send user info to Strapi to create a new user
+    axios
+      .post(process.env.GATSBY_STRAPI_URL + "/auth/local/register", {
+        username: values.name,
+        email: values.email,
+        password: values.password,
+      })
+      .then(response => {
+        console.log("User Profile:", response.data.user)
+        console.log("JWT:", response.data.jwt)
+        const complete = steps.find(step => step.label === "Complete")
 
-    setSelectedStep(steps.indexOf(complete))
+        setSelectedStep(steps.indexOf(complete))
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
   const nameField = {
@@ -99,6 +114,10 @@ export default function SignUp({ steps, setSelectedStep }) {
   const fields = info
     ? EmailPassword(classes, false, false, visible, setVisible)
     : nameField
+
+  const disabled =
+    Object.keys(errors).some(error => errors[error] === true) ||
+    Object.keys(errors).length !== Object.keys(values).length
 
   return (
     <>
@@ -116,7 +135,8 @@ export default function SignUp({ steps, setSelectedStep }) {
         <Button
           variant="contained"
           color="secondary"
-          onClick={() => info ? handleComplete() : null}
+          disabled={info && disabled}
+          onClick={() => (info ? handleComplete() : null)}
           classes={{
             root: clsx(classes.facebookSignUp, {
               [classes.removeButtonMargin]: info,
