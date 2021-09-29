@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton"
 import { makeStyles } from "@material-ui/core/styles"
 
 import Fields from "./Fields"
-import { setUser } from "../../contexts/actions"
+import { setUser, setSnackbar } from "../../contexts/actions"
 
 // images
 import accountIcon from "../../images/account.svg"
@@ -96,7 +96,13 @@ export const EmailPassword = (
   },
 })
 
-export default function Login({ steps, setSelectedStep, user, dispatchUser }) {
+export default function Login({
+  steps,
+  setSelectedStep,
+  user,
+  dispatchUser,
+  dispatchFeedback,
+}) {
   const classes = useStyles()
 
   // set state to hold values from text fields
@@ -132,8 +138,10 @@ export default function Login({ steps, setSelectedStep, user, dispatchUser }) {
         dispatchUser(setUser({ ...response.data.user, jwt: response.data.jwt }))
       })
       .catch(error => {
+        const { message } = error.response.data.message[0].messages[0]
         setLoading(false)
         console.error(error)
+        dispatchFeedback(setSnackbar({ status: "error", message }))
       })
   }
 
