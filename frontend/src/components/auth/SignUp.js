@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles"
 
 import Fields from "./Fields"
 import { EmailPassword } from "./Login"
+import { setUser } from "../../contexts/actions"
 
 // images
 import addUserIcon from "../../images/add-user.svg"
@@ -54,7 +55,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function SignUp({ steps, setSelectedStep }) {
+export default function SignUp({ steps, setSelectedStep, dispatchUser }) {
   const classes = useStyles()
 
   // set state to hold values from text fields
@@ -92,8 +93,8 @@ export default function SignUp({ steps, setSelectedStep }) {
         password: values.password,
       })
       .then(response => {
-        console.log("User Profile:", response.data.user)
-        console.log("JWT:", response.data.jwt)
+        // set current user in global store
+        dispatchUser(setUser({ ...response.data.user, jwt: response.data.jwt }))
         const complete = steps.find(step => step.label === "Complete")
 
         setSelectedStep(steps.indexOf(complete))
@@ -115,7 +116,7 @@ export default function SignUp({ steps, setSelectedStep }) {
     ? EmailPassword(classes, false, false, visible, setVisible)
     : nameField
 
-    // set button to disabled if text fields have errors
+  // set button to disabled if text fields have errors
   const disabled =
     Object.keys(errors).some(error => errors[error] === true) ||
     Object.keys(errors).length !== Object.keys(values).length

@@ -132,7 +132,7 @@ export default function Login({ steps, setSelectedStep, user, dispatchUser }) {
       })
   }
 
-  console.log("LOGIN_USER:", user)
+ 
 
   // disable login button if text fields have errors
   const disabled =
