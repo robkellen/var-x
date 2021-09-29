@@ -8,6 +8,7 @@ import IconButton from "@material-ui/core/IconButton"
 import { makeStyles } from "@material-ui/core/styles"
 
 import Fields from "./Fields"
+import { setUser } from "../../contexts/actions"
 
 // images
 import accountIcon from "../../images/account.svg"
@@ -94,7 +95,7 @@ export const EmailPassword = (
   },
 })
 
-export default function Login({ steps, setSelectedStep }) {
+export default function Login({ steps, setSelectedStep, user, dispatchUser }) {
   const classes = useStyles()
 
   // set state to hold values from text fields
@@ -123,13 +124,16 @@ export default function Login({ steps, setSelectedStep }) {
         password: values.password,
       })
       .then(response => {
-        console.log("User Profile: ", response.data.user)
-        console.log("JWT:", response.data.jwt)
+        // set current user in global store
+        dispatchUser(setUser({ ...response.data.user, jwt: response.data.jwt }))
       })
       .catch(error => {
         console.error(error)
       })
   }
+
+  console.log("LOGIN_USER:", user)
+
   // disable login button if text fields have errors
   const disabled =
     Object.keys(errors).some(error => errors[error] === true) ||

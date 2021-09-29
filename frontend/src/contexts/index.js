@@ -1,1 +1,1 @@
-export { UserContext, UserWrapper } from "./wrappers/user-wrapper"
+export { UserContext, UserWrapper } from "./wrappers/UserWrapper"
