@@ -28,7 +28,13 @@ export function UserWrapper({ children }) {
             },
           })
           .then(response => {
-            dispatchUser(setUser({ ...response.data, jwt: storedUser.jwt }))
+            dispatchUser(
+              setUser({
+                ...response.data,
+                jwt: storedUser.jwt,
+                onboarding: true,
+              })
+            )
           })
           .catch(error => {
             // if token is expired set the user to the default user of "Guest" and force user to sign in again to create new valid token
