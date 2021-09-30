@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Grid from "@material-ui/core/Grid"
 import CircularProgress from "@material-ui/core/CircularProgress"
@@ -34,6 +34,7 @@ export default function Reset({ dispatchFeedback, steps, setSelectedStep }) {
   const [values, setValues] = useState({ password: "", confirmation: "" })
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const { password } = EmailPassword(classes, true, false, visible, setVisible)
   const fields = {
@@ -57,19 +58,13 @@ export default function Reset({ dispatchFeedback, steps, setSelectedStep }) {
       })
       .then(response => {
         setLoading(false)
+        setSuccess(true)
         dispatchFeedback(
           setSnackbar({
             status: "success",
             message: "Password Successfully Reset!",
           })
         )
-        setTimeout(() => {
-          // replace current URL with only the base URL
-          window.history.replaceState(null, null, window.location.pathname)
-          // after 6 seconds direct user back to login component
-          const login = steps.find(step => step.label === "Login")
-          setSelectedStep(steps.indexOf(login))
-        }, 6000)
       })
       .catch(error => {
         setLoading(false)
@@ -83,6 +78,20 @@ export default function Reset({ dispatchFeedback, steps, setSelectedStep }) {
     Object.keys(errors).some(error => errors[error] === true) ||
     Object.keys(errors).length !== Object.keys(values).length ||
     values.password !== values.confirmation
+
+  useEffect(() => {
+    if (!success) return
+
+    const timer = setTimeout(() => {
+      // replace current URL with only the base URL
+      window.history.replaceState(null, null, window.location.pathname)
+      // after 6 seconds direct user back to login component
+      const login = steps.find(step => step.label === "Login")
+      setSelectedStep(steps.indexOf(login))
+    }, 6000)
+
+    return () => clearTimeout(timer)
+  }, [success])
 
   return (
     <>
