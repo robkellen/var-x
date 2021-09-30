@@ -77,7 +77,7 @@ export const EmailPassword = (
   },
   password: {
     helperText:
-      "you must be at least 8 characters and include 1 uppercase letter, 1 number, and one special character",
+      "your password must be at least 8 characters and include 1 uppercase letter, 1 number, and one special character",
     placeholder: "Password",
     hidden: hidePassword,
     type: visible ? "text" : "password",
@@ -151,6 +151,33 @@ export default function Login({
       })
   }
 
+  // handle forgot password
+  const handleForgot = () => {
+    setLoading(true)
+
+    axios
+      .post(process.env.GATSBY_STRAPI_URL + "/auth/forgot-password", {
+        email: values.email,
+      })
+      .then(response => {
+        setLoading(false)
+
+        dispatchFeedback(
+          setSnackbar({ status: "success", message: "Reset Code Sent" })
+        )
+
+        setTimeout(() => {
+          setForgot(false)
+        }, 6000)
+      })
+      .catch(error => {
+        const { message } = error.response.data.message[0].messages[0]
+        setLoading(false)
+        console.error(error)
+        dispatchFeedback(setSnackbar({ status: "error", message }))
+      })
+  }
+
   // disable login button if text fields have errors
   const disabled =
     Object.keys(errors).some(error => errors[error] === true) ||
@@ -173,7 +200,7 @@ export default function Login({
           variant="contained"
           color="secondary"
           disabled={loading || (!forgot && disabled)}
-          onClick={() => (forgot ? null : handleLogin())}
+          onClick={() => (forgot ? handleForgot() : handleLogin())}
           classes={{ root: clsx(classes.login, { [classes.reset]: forgot }) }}
         >
           {loading ? (

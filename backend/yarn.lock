@@ -1644,9 +1644,9 @@
     "@types/node" "*"
 
 "@types/lodash@^4.14.165":
-  "integrity" "sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw=="
-  "resolved" "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.172.tgz"
-  "version" "4.14.172"
+  "integrity" "sha512-XmdEOrKQ8a1Y/yxQFOMbC47G/V2VDO1GvMRnl4O75M4GW/abC5tnfzadQYkqEveqRM1dEJGFFegfPNA2vvx2iw=="
+  "resolved" "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.175.tgz"
+  "version" "4.14.175"
 
 "@types/long@^4.0.0":
   "integrity" "sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w=="
@@ -9943,13 +9943,13 @@
     "strapi-utils" "3.1.4"
     "uuid" "^3.1.0"
 
-"strapi-provider-email-sendgrid@^3.4.0":
-  "integrity" "sha512-htEkJx9XdopKS1OZMZIoVNj0OCqqCxB1M72Nvq2CWGAd8/qhK65hipCgF4jPAZw5tx5wBTJo8KZyesrlrxoZiw=="
-  "resolved" "https://registry.npmjs.org/strapi-provider-email-sendgrid/-/strapi-provider-email-sendgrid-3.6.6.tgz"
-  "version" "3.6.6"
+"strapi-provider-email-sendgrid@^3.6.8":
+  "integrity" "sha512-l31T2LqTn1rAtWrMwRkN4OGtqmZJ40FoWsZDu247UQCAqtvHCcNeOttcgMGkkLjIG+arysfn8otsY1yudLwu1A=="
+  "resolved" "https://registry.npmjs.org/strapi-provider-email-sendgrid/-/strapi-provider-email-sendgrid-3.6.8.tgz"
+  "version" "3.6.8"
   dependencies:
     "@sendgrid/mail" "6.4.0"
-    "strapi-utils" "3.6.6"
+    "strapi-utils" "3.6.8"
 
 "strapi-provider-email-sendmail@3.1.4":
   "integrity" "sha512-21QSawaCsa51xkM/vj8350R+wm7QH/xExJqXOntA5bnFql/TYYziZPDgBFYYfGTsH/IypAHu7Fq7iduokvTe8w=="
@@ -9976,10 +9976,10 @@
     "pluralize" "^8.0.0"
     "yup" "0.28.1"
 
-"strapi-utils@3.6.6":
-  "integrity" "sha512-vZavsM/6CVNecoznhqJBBOrrDMbPMSLSLqA2GgQ0DiimVLLsMC070uaROmRCkKw+DTgLqZDzi2mih0kKJXruTg=="
-  "resolved" "https://registry.npmjs.org/strapi-utils/-/strapi-utils-3.6.6.tgz"
-  "version" "3.6.6"
+"strapi-utils@3.6.8":
+  "integrity" "sha512-6tKHfkjrY3AfSv8sAg77Ix7meMttyd2efODY2dOKkKgdXDugdNwbl/AavjWL0xfywZaCNhxkNLLN/2Wvx8pO+w=="
+  "resolved" "https://registry.npmjs.org/strapi-utils/-/strapi-utils-3.6.8.tgz"
+  "version" "3.6.8"
   dependencies:
     "@sindresorhus/slugify" "1.1.0"
     "date-fns" "^2.19.0"

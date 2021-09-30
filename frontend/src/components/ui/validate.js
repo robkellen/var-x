@@ -10,6 +10,10 @@ export default function validate(values) {
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(
         val
       ),
+    confirmation: val =>
+      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(
+        val
+      ),
   }
 
   // output: {field: valid} eg {email: true, phone: true}
