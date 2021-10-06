@@ -145,8 +145,8 @@ export default function Login({
         )
       })
       .catch(error => {
-        const { message } = error.response.data.message[0].messages[0]
         setLoading(false)
+        const { message } = error.response.data.message[0].messages[0]
         console.error(error)
         dispatchFeedback(setSnackbar({ status: "error", message }))
       })
@@ -181,8 +181,7 @@ export default function Login({
     Object.keys(errors).some(error => errors[error] === true) ||
     Object.keys(errors).length !== Object.keys(values).length
 
-
-    // handle unmounting of component if user navigates away while setTimeout is being executed
+  // handle unmounting of component if user navigates away while setTimeout is being executed
   useEffect(() => {
     if (!success) return
 
@@ -225,6 +224,8 @@ export default function Login({
       {forgot ? null : (
         <Grid item>
           <Button
+            component="a"
+            href={`${process.env.GATSBY_STRAPI_URL}/connect/facebook`}
             classes={{
               root: clsx(classes.facebookButton, {
                 [classes.passwordError]: errors.password,
