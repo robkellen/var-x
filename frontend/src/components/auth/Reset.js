@@ -20,9 +20,17 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 50,
     textTransform: "none",
     marginBottom: "4rem",
+    [theme.breakpoints.down("xs")]: {
+      width: "15rem",
+    },
   },
   icon: {
     marginTop: "2rem",
+  },
+  buttonText: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.5rem",
+    },
   },
 }))
 
@@ -116,7 +124,9 @@ export default function Reset({ dispatchFeedback, steps, setSelectedStep }) {
           {loading ? (
             <CircularProgress />
           ) : (
-            <Typography variant="h5">reset password</Typography>
+            <Typography variant="h5" classes={{ root: classes.buttonText }}>
+              reset password
+            </Typography>
           )}
         </Button>
       </Grid>

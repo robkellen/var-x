@@ -34,6 +34,9 @@ const useStyles = makeStyles(theme => ({
     width: "20rem",
     borderRadius: 50,
     textTransform: "none",
+    [theme.breakpoints.down("xs")]: {
+      width: "15rem",
+    },
   },
   facebookText: {
     fontSize: "1.5rem",
@@ -54,6 +57,11 @@ const useStyles = makeStyles(theme => ({
   },
   reset: {
     marginTop: "-4rem",
+  },
+  buttonText: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.5rem",
+    },
   },
 }))
 
@@ -215,8 +223,8 @@ export default function Login({
           {loading ? (
             <CircularProgress />
           ) : (
-            <Typography variant="h5">
-              {forgot ? "reset password" : "login"}
+            <Typography variant="h5" classes={{ root: classes.buttonText }}>
+              {forgot ? "forgot password" : "login"}
             </Typography>
           )}
         </Button>
