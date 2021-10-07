@@ -8,7 +8,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
 
 // images
-import background from "../../images/toolbar-background.svg"
+import background from "../../images/repeating-smallest.svg"
 import ListIcon from "../../images/List"
 import GridIcon from "../../images/Grid"
 
@@ -19,9 +19,8 @@ const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: "3rem",
     backgroundImage: `url(${background})`,
-    backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
+    backgroundRepeat: "repeat",
     position: "relative",
     [theme.breakpoints.down("sm")]: {
       padding: "3rem 0",
