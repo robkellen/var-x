@@ -1,13 +1,14 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useState, useEffect } from "react"
+import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
-import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 import useResizeAware from "react-resize-aware"
 
 // react-spring animations
-import { useSprings, animated } from "react-spring"
+import { useSpring, useSprings, animated } from "react-spring"
 
+import Settings from "./Settings"
 import { UserContext } from "../../contexts"
 
 // images
@@ -37,10 +38,19 @@ const useStyles = makeStyles(theme => ({
     height: "12rem",
     width: "12rem",
   },
+  button: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  addHover: {
+    "&:hover": {
+      cursor: "pointer",
+      backgroundColor: theme.palette.secondary.main,
+    },
+  },
 }))
 
 // set animated component
-const AnimatedButton = animated(Button)
+const AnimatedGrid = animated(Grid)
 
 export default function SettingsPortal() {
   const classes = useStyles()
@@ -49,11 +59,14 @@ export default function SettingsPortal() {
   // set inital state for animation expanding selected setting
   const [selectedSetting, setSelectedSetting] = useState(null)
 
+  // set inital state for showing the selected settings component
+  const [showComponent, setShowComponent] = useState(false)
+
   // hook to get dimensions of components to resize
   const [resizeListener, sizes] = useResizeAware()
 
   const buttons = [
-    { label: "Settings", icon: settingsIcon },
+    { label: "Settings", icon: settingsIcon, component: Settings },
     { label: "Order History", icon: orderHistoryIcon },
     { label: "Favorites", icon: favoritesIcon },
     { label: "Subscriptions", icon: subscriptionIcon },
@@ -68,6 +81,7 @@ export default function SettingsPortal() {
     }
   }
 
+  // spring animations for buttons
   const springs = useSprings(
     buttons.length,
     buttons.map(button => ({
@@ -103,6 +117,25 @@ export default function SettingsPortal() {
     }))
   )
 
+  // animation for selected setting when enlarged
+  const styles = useSpring({
+    opacity: selectedSetting === null || showComponent ? 1 : 0,
+    delay: selectedSetting === null || showComponent ? 0 : 1350,
+  })
+
+  useEffect(() => {
+    if (selectedSetting === null) {
+      setShowComponent(false)
+      return
+    }
+
+    const timer = setTimeout(() => setShowComponent(true), 2000)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [selectedSetting])
+
   return (
     <Grid container direction="column" alignItems="center">
       {resizeListener}
@@ -121,29 +154,48 @@ export default function SettingsPortal() {
         justifyContent="space-around"
         classes={{ root: classes.dashboard }}
       >
-        {springs.map((prop, i) => (
-          <Grid item key={buttons[i].label}>
-            <AnimatedButton
-              variant="contained"
-              color="primary"
-              onClick={() => handleClick(buttons[i].label)}
+        {springs.map((prop, i) => {
+          const button = buttons[i]
+
+          return (
+            <AnimatedGrid
+              key={i}
+              item
+              onClick={() => (showComponent ? null : handleClick(button.label))}
               style={prop}
+              classes={{
+                root: clsx(classes.button, {
+                  [classes.addHover]: !showComponent,
+                }),
+              }}
             >
-              <Grid container direction="column">
-                <Grid item>
-                  <img
-                    src={buttons[i].icon}
-                    alt={buttons[i].label}
-                    className={classes.icon}
-                  />
-                </Grid>
-                <Grid item>
-                  <Typography variant="h5">{buttons[i].label}</Typography>
-                </Grid>
-              </Grid>
-            </AnimatedButton>
-          </Grid>
-        ))}
+              <AnimatedGrid
+                style={styles}
+                container
+                justifyContent="center"
+                alignItems="center"
+                direction="column"
+              >
+                {selectedSetting === button.label && showComponent ? (
+                  <button.component />
+                ) : (
+                  <>
+                    <Grid item>
+                      <img
+                        src={button.icon}
+                        alt={button.label}
+                        className={classes.icon}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="h5">{button.label}</Typography>
+                    </Grid>
+                  </>
+                )}
+              </AnimatedGrid>
+            </AnimatedGrid>
+          )
+        })}
       </Grid>
     </Grid>
   )

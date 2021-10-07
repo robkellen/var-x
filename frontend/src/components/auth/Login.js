@@ -14,9 +14,9 @@ import { setUser, setSnackbar } from "../../contexts/actions"
 // images
 import accountIcon from "../../images/account.svg"
 import EmailAdornment from "../../images/EmailAdornment"
-import passwordAdornment from "../../images/password-adornment.svg"
-import hidePasswordIcon from "../../images/hide-password.svg"
-import showPasswordIcon from "../../images/show-password.svg"
+import PasswordAdornment from "../../images/PasswordAdornment"
+import HidePasswordIcon from "../../images/HidePassword"
+import ShowPasswordIcon from "../../images/ShowPassword"
 import addUserIcon from "../../images/add-user.svg"
 import forgotPasswordIcon from "../../images/forgot.svg"
 import close from "../../images/close.svg"
@@ -70,7 +70,8 @@ export const EmailPassword = (
   hideEmail,
   hidePassword,
   visible,
-  setVisible
+  setVisible,
+  isWhite
 ) => ({
   email: {
     helperText: "invalid email",
@@ -79,7 +80,7 @@ export const EmailPassword = (
     hidden: hideEmail,
     startAdornment: (
       <span className={classes.emailAdornment}>
-        <EmailAdornment />
+        <EmailAdornment color={isWhite ? "#fff" : null} />
       </span>
     ),
   },
@@ -89,16 +90,17 @@ export const EmailPassword = (
     placeholder: "Password",
     hidden: hidePassword,
     type: visible ? "text" : "password",
-    startAdornment: <img src={passwordAdornment} alt="password" />,
+    startAdornment: <PasswordAdornment color={isWhite ? "#fff" : null} />,
     endAdornment: (
       <IconButton
         onClick={() => setVisible(!visible)}
         classes={{ root: classes.visibleIcon }}
       >
-        <img
-          src={visible ? showPasswordIcon : hidePasswordIcon}
-          alt={`${visible ? "Show" : "Hide"} Password`}
-        />
+        {visible ? (
+          <ShowPasswordIcon color={isWhite ? "#fff" : null} />
+        ) : (
+          <HidePasswordIcon color={isWhite ? "#fff" : null} />
+        )}
       </IconButton>
     ),
   },
