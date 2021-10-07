@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 // individual settings components
 import Details from "./Details"
 import Payments from "./Payments"
+import Location from "./Location"
 
 const useStyles = makeStyles(theme => ({}))
 
@@ -13,9 +14,14 @@ export default function Settings() {
   const classes = useStyles()
 
   return (
-    <Grid container>
-      <Details />
-      <Payments />
-    </Grid>
+    <>
+      <Grid container>
+        <Details />
+        <Payments />
+      </Grid>
+      <Grid container>
+        <Location />
+      </Grid>
+    </>
   )
 }

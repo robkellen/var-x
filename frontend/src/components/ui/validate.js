@@ -14,6 +14,11 @@ export default function validate(values) {
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(
         val
       ),
+    street: val =>
+      /^(\d+) ?([A-Za-z](?= ))? (.*?) ([^ ]+?) ?((?<= )APT)? ?((?<= )\d*)?$/.test(
+        val
+      ),
+    zip: val => /^\d{5}(-\d{4})?$/.test(val),
   }
 
   // output: {field: valid} eg {email: true, phone: true}
