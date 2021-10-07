@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles"
 
 // individual settings components
 import Details from "./Details"
+import Payments from "./Payments"
 
 const useStyles = makeStyles(theme => ({}))
 
@@ -14,6 +15,7 @@ export default function Settings() {
   return (
     <Grid container>
       <Details />
+      <Payments />
     </Grid>
   )
 }
