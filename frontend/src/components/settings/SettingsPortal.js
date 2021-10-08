@@ -10,6 +10,7 @@ import { useSpring, useSprings, animated } from "react-spring"
 
 import Settings from "./Settings"
 import { UserContext } from "../../contexts"
+import { setUser } from "../../contexts/actions"
 
 // images
 import accountIcon from "../../images/account.svg"
@@ -18,6 +19,7 @@ import orderHistoryIcon from "../../images/order-history.svg"
 import favoritesIcon from "../../images/favorite.svg"
 import subscriptionIcon from "../../images/subscription.svg"
 import background from "../../images/repeating-smallest.svg"
+import { Button } from "@material-ui/core"
 
 const useStyles = makeStyles(theme => ({
   name: {
@@ -49,13 +51,16 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.secondary.main,
     },
   },
+  logout: {
+    color: theme.palette.error.main,
+  },
 }))
 
 // set animated component
 const AnimatedGrid = animated(Grid)
 
 export default function SettingsPortal() {
-  const { user } = useContext(UserContext)
+  const { user, dispatchUser, defaultUser } = useContext(UserContext)
 
   // set inital state for animation expanding selected setting
   const [selectedSetting, setSelectedSetting] = useState(null)
@@ -126,6 +131,11 @@ export default function SettingsPortal() {
     delay: selectedSetting === null || showComponent ? 0 : 1350,
   })
 
+  // log user out
+  const handleLogout = () => {
+    dispatchUser(setUser(defaultUser))
+  }
+
   useEffect(() => {
     if (selectedSetting === null) {
       setShowComponent(false)
@@ -149,6 +159,13 @@ export default function SettingsPortal() {
         <Typography variant="h4" classes={{ root: classes.name }}>
           Welcome back, {user.username}
         </Typography>
+      </Grid>
+      <Grid item>
+        <Button onClick={handleLogout}>
+          <Typography variant="h5" classes={{ root: classes.logout }}>
+            logout
+          </Typography>
+        </Button>
       </Grid>
       <Grid
         item

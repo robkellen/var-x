@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import Slots from "./Slots"
 
 // images
-import card from "../../images/card.svg"
+import cardIcon from "../../images/card.svg"
 
 const useStyles = makeStyles(theme => ({
   number: {
@@ -42,10 +42,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Payments() {
+export default function Payments({ user }) {
   const classes = useStyles()
 
-  const cards = [{ last4: 1234, brand: "Visa" }]
+  // set initial state for payment slot
+  const [slot, setSlot] = useState(0)
+
+  const card = user.paymentMethods[slot]
 
   return (
     <Grid
@@ -58,19 +61,17 @@ export default function Payments() {
       classes={{ root: classes.paymentContainer }}
     >
       <Grid item>
-        <img src={card} alt="payment settings" className={classes.icon} />
+        <img src={cardIcon} alt="payment settings" className={classes.icon} />
       </Grid>
       <Grid item container justifyContent="center">
         <Grid item>
           <Typography variant="h3" classes={{ root: classes.number }}>
-            {cards
-              ? `${cards[0].brand.toUpperCase()} **** **** **** ${
-                  cards[0].last4
-                }`
+            {card.last4
+              ? `${card[0].brand.toUpperCase()} **** **** **** ${card[0].last4}`
               : "Add A New Card During Checkout"}
           </Typography>
         </Grid>
-        {cards && (
+        {card.last4 && (
           <Grid item>
             <Button variant="contained" classes={{ root: classes.removeCard }}>
               <Typography
@@ -84,7 +85,7 @@ export default function Payments() {
         )}
       </Grid>
       <Grid item container classes={{ root: classes.slotsContainer }}>
-        <Slots />
+        <Slots slot={slot} setSlot={setSlot} />
       </Grid>
     </Grid>
   )
