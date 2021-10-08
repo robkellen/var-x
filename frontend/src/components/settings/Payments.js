@@ -32,6 +32,14 @@ const useStyles = makeStyles(theme => ({
   icon: {
     marginBottom: "3rem",
   },
+  paymentContainer: {
+    borderLeft: "4px solid #fff",
+    position: "relative",
+  },
+  slotsContainer: {
+    position: "absolute",
+    bottom: 0,
+  },
 }))
 
 export default function Payments() {
@@ -40,7 +48,15 @@ export default function Payments() {
   const cards = [{ last4: 1234, brand: "Visa" }]
 
   return (
-    <Grid item container direction="column" xs={6} alignItems="center">
+    <Grid
+      item
+      container
+      direction="column"
+      xs={6}
+      alignItems="center"
+      justifyContent="center"
+      classes={{ root: classes.paymentContainer }}
+    >
       <Grid item>
         <img src={card} alt="payment settings" className={classes.icon} />
       </Grid>
@@ -67,7 +83,7 @@ export default function Payments() {
           </Grid>
         )}
       </Grid>
-      <Grid item container>
+      <Grid item container classes={{ root: classes.slotsContainer }}>
         <Slots />
       </Grid>
     </Grid>

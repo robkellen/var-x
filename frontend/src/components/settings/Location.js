@@ -25,6 +25,13 @@ const useStyles = makeStyles(theme => ({
       marginTop: "2rem",
     },
   },
+  locationContainer: {
+    position: "relative",
+  },
+  slotContainer: {
+    position: "absolute",
+    bottom: 0,
+  },
 }))
 
 export default function Location() {
@@ -49,7 +56,15 @@ export default function Location() {
   }
 
   return (
-    <Grid item container direction="column" xs={6} alignItems="center">
+    <Grid
+      item
+      container
+      direction="column"
+      xs={6}
+      alignItems="center"
+      justifyContent="center"
+      classes={{ root: classes.locationContainer }}
+    >
       <Grid item>
         <img
           src={locationIcon}
@@ -76,7 +91,7 @@ export default function Location() {
       <Grid item classes={{ root: classes.chipWrapper }}>
         <Chip label="City, State" />
       </Grid>
-      <Grid item container>
+      <Grid item container classes={{ root: classes.slotContainer }}>
         <Slots />
       </Grid>
     </Grid>
