@@ -59,13 +59,13 @@ export default function Details({
   setValues,
   slot,
   setSlot,
+  errors,
+  setErrors,
 }) {
   const classes = useStyles()
 
   // set inital state of component
   const [visible, setVisible] = useState(false)
-
-  const [errors, setErrors] = useState({})
 
   // when slot changes, update values with new slot settings
   useEffect(() => {

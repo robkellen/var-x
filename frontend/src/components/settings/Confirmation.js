@@ -44,6 +44,13 @@ export default function Confirmation({
     confirmation: { ...password, placeholder: "New Password" },
   }
 
+  // disable change password button if new password is invalid
+  const disabled = Object.keys(errors).some(
+    error =>
+      errors[error] === true ||
+      Object.keys(errors).length !== Object.keys(values).length
+  )
+
   // submit change of password
   const handleConfirm = () => {
     setLoading(true)
@@ -96,6 +103,17 @@ export default function Confirmation({
       })
   }
 
+  // close dialog and update user that their password has not been changed if they cancel the change
+  const handleCancel = () => {
+    setDialogOpen(false)
+    dispatchFeedback(
+      setSnackbar({
+        status: "error",
+        message: "Your password has NOT been changed.",
+      })
+    )
+  }
+
   return (
     <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
       <DialogTitle disableTypography>
@@ -119,7 +137,7 @@ export default function Confirmation({
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={() => setDialogOpen(false)}
+          onClick={handleCancel}
           disabled={loading}
           classes={{ root: classes.button }}
           color="primary"
@@ -128,7 +146,7 @@ export default function Confirmation({
         </Button>
         <Button
           onClick={handleConfirm}
-          disabled={loading}
+          disabled={loading || disabled}
           classes={{ root: classes.button }}
           color="secondary"
         >

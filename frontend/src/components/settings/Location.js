@@ -41,11 +41,10 @@ export default function Location({
   setValues,
   slot,
   setSlot,
+  errors,
+  setErrors,
 }) {
   const classes = useStyles()
-
-  // set initial state
-  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     setValues(user.locations[slot])

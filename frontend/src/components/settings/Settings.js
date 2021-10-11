@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -38,6 +38,7 @@ export default function Settings({ setSelectedSetting }) {
   })
 
   const [detailSlot, setDetailSlot] = useState(0)
+  const [detailErrors, setDetailErrors] = useState({})
 
   const [locationValues, setLocationValues] = useState({
     street: "",
@@ -47,6 +48,22 @@ export default function Settings({ setSelectedSetting }) {
   })
 
   const [locationSlot, setLocationSlot] = useState(0)
+  const [locationErrors, setLocationErrors] = useState({})
+
+  // handle error validation
+  const allErrors = { ...detailErrors, ...locationErrors }
+  const isError = Object.keys(allErrors).some(
+    error => allErrors[error] === true
+  )
+
+  // clear fields if user changes the slot to enter information in
+  useEffect(() => {
+    setDetailErrors({})
+  }, [detailSlot])
+
+  useEffect(() => {
+    setLocationErrors({})
+  }, [locationSlot])
 
   return (
     <>
@@ -59,6 +76,8 @@ export default function Settings({ setSelectedSetting }) {
           setValues={setDetailValues}
           slot={detailSlot}
           setSlot={setDetailSlot}
+          errors={detailErrors}
+          setErrors={setDetailErrors}
         />
         <Payments user={user} edit={edit} />
       </Grid>
@@ -74,6 +93,8 @@ export default function Settings({ setSelectedSetting }) {
           setValues={setLocationValues}
           slot={locationSlot}
           setSlot={setLocationSlot}
+          errors={locationErrors}
+          setErrors={setLocationErrors}
         />
         <Edit
           user={user}
@@ -86,6 +107,7 @@ export default function Settings({ setSelectedSetting }) {
           detailSlot={detailSlot}
           locationSlot={locationSlot}
           dispatchUser={dispatchUser}
+          isError={isError}
         />
       </Grid>
     </>
