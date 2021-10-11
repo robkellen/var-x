@@ -5,6 +5,8 @@ import IconButton from "@material-ui/core/IconButton"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import { makeStyles } from "@material-ui/core/styles"
 
+import Confirmation from "./Confirmation"
+
 import { FeedbackContext } from "../../contexts"
 import { setSnackbar, setUser } from "../../contexts/actions"
 
@@ -39,14 +41,20 @@ export default function Edit({
 
   const { dispatchFeedback } = useContext(FeedbackContext)
   const [loading, setLoading] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(true)
 
-  // toggle between edit/save settings icon
+  // handle editing of user info
   const handleEdit = () => {
     setEdit(!edit)
+    const { password, ...newDetails } = details
+
+    // confirm entered password change if user is updating password
+    if (password != "********") {
+      setDialogOpen(true)
+    }
+
     if (edit && changesMade) {
       setLoading(true)
-
-      const { password, ...newDetails } = details
 
       axios
         .post(
@@ -118,6 +126,13 @@ export default function Edit({
           </IconButton>
         )}
       </Grid>
+      <Confirmation
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+        user={user}
+        dispatchFeedback={dispatchFeedback}
+        setSnackbar={setSnackbar}
+      />
     </Grid>
   )
 }

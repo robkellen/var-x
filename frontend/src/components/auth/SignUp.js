@@ -125,7 +125,7 @@ export default function SignUp({
   }
 
   const fields = info
-    ? EmailPassword(classes, false, false, visible, setVisible)
+    ? EmailPassword(false, false, visible, setVisible)
     : nameField
 
   // set button to disabled if text fields have errors
