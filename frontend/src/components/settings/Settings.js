@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useState, useContext } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -24,20 +24,69 @@ const useStyles = makeStyles(theme => ({
 export default function Settings({ setSelectedSetting }) {
   const classes = useStyles()
 
-  const { user } = useContext(UserContext)
+  const { user, dispatchUser } = useContext(UserContext)
+
+  // set state for editing settings
+  const [edit, setEdit] = useState(false)
+  const [changesMade, setChangesMade] = useState(false)
+
+  const [detailValues, setDetailValues] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "********",
+  })
+
+  const [detailSlot, setDetailSlot] = useState(0)
+
+  const [locationValues, setLocationValues] = useState({
+    street: "",
+    zip: "",
+    city: "",
+    state: "",
+  })
+
+  const [locationSlot, setLocationSlot] = useState(0)
 
   return (
     <>
       <Grid container classes={{ root: classes.sectionContainer }}>
-        <Details user={user} />
-        <Payments user={user} />
+        <Details
+          user={user}
+          edit={edit}
+          setChangesMade={setChangesMade}
+          values={detailValues}
+          setValues={setDetailValues}
+          slot={detailSlot}
+          setSlot={setDetailSlot}
+        />
+        <Payments user={user} edit={edit} />
       </Grid>
       <Grid
         container
         classes={{ root: clsx(classes.bottomRow, classes.sectionContainer) }}
       >
-        <Location user={user} />
-        <Edit user={user} setSelectedSetting={setSelectedSetting} />
+        <Location
+          user={user}
+          edit={edit}
+          setChangesMade={setChangesMade}
+          values={locationValues}
+          setValues={setLocationValues}
+          slot={locationSlot}
+          setSlot={setLocationSlot}
+        />
+        <Edit
+          user={user}
+          setSelectedSetting={setSelectedSetting}
+          edit={edit}
+          setEdit={setEdit}
+          changesMade={changesMade}
+          details={detailValues}
+          locations={locationValues}
+          detailSlot={detailSlot}
+          locationSlot={locationSlot}
+          dispatchUser={dispatchUser}
+        />
       </Grid>
     </>
   )

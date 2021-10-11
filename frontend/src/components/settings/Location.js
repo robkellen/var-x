@@ -33,22 +33,32 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Location({ user }) {
+export default function Location({
+  user,
+  edit,
+  setChangesMade,
+  values,
+  setValues,
+  slot,
+  setSlot,
+}) {
   const classes = useStyles()
 
   // set initial state
-  const [values, setValues] = useState({
-    street: "",
-    zip: "",
-    city: "",
-    state: "",
-  })
   const [errors, setErrors] = useState({})
-  const [slot, setSlot] = useState(0)
 
   useEffect(() => {
     setValues(user.locations[slot])
   }, [slot])
+
+  // listen to changes to values of fields in a given slot and update state
+  useEffect(() => {
+    const changed = Object.keys(user.locations[slot]).some(
+      field => values[field] !== user.locations[slot][field]
+    )
+
+    setChangesMade(changed)
+  }, [values])
 
   // info for fields
   const fields = {
@@ -95,6 +105,7 @@ export default function Location({ user }) {
           errors={errors}
           setErrors={setErrors}
           isWhite
+          disabled={!edit}
         />
       </Grid>
       <Grid item classes={{ root: classes.chipWrapper }}>
