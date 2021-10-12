@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
+import { useMediaQuery } from "@material-ui/core"
 
 import Slots from "./Slots"
 import Fields from "../auth/Fields"
@@ -26,15 +27,29 @@ const useStyles = makeStyles(theme => ({
   },
   icon: {
     marginBottom: "3rem",
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: "1rem",
+    },
   },
   fieldContainer: {
     marginBottom: "2rem",
     "& > :not(:first-child)": {
       marginLeft: "5rem",
     },
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: "1rem",
+      "& > :not(:first-child)": {
+        marginLeft: 0,
+        marginTop: "1rem",
+      },
+    },
   },
   detailsContainer: {
     position: "relative",
+    [theme.breakpoints.down("md")]: {
+      borderBottom: "4px solid #fff",
+      height: "30rem",
+    },
   },
   slotsContainer: {
     position: "absolute",
@@ -63,6 +78,9 @@ export default function Details({
   setErrors,
 }) {
   const classes = useStyles()
+
+  // define styles based on screen size
+  const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
 
   // set inital state of component
   const [visible, setVisible] = useState(false)
@@ -106,7 +124,8 @@ export default function Details({
       item
       container
       direction="column"
-      xs={6}
+      lg={6}
+      xs={12}
       alignItems="center"
       justifyContent="center"
       classes={{ root: classes.detailsContainer }}
@@ -121,8 +140,10 @@ export default function Details({
       {fields.map((pair, i) => (
         <Grid
           container
+          direction={matchesXS ? "column" : "row"}
           key={i}
           justifyContent="center"
+          alignItems={matchesXS ? "center" : undefined}
           classes={{ root: classes.fieldContainer }}
         >
           <Fields
@@ -133,6 +154,7 @@ export default function Details({
             setErrors={setErrors}
             isWhite
             disabled={!edit}
+            settings
           />
         </Grid>
       ))}
