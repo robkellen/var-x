@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
@@ -8,15 +8,18 @@ import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer"
+import Badge from "@material-ui/core/Badge"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import { makeStyles } from "@material-ui/core/styles"
 import { Link } from "gatsby"
 
+import { CartContext } from "../../contexts"
+
 // images for header icons
 import search from "../../images/search.svg"
-import cart from "../../images/cart.svg"
+import cartIcon from "../../images/cart.svg"
 import account from "../../images/account-header.svg"
 import menu from "../../images/menu.svg"
 
@@ -60,10 +63,23 @@ const useStyles = makeStyles(theme => ({
   listItemText: {
     color: "#fff",
   },
+  badge: {
+    fontSize: "1rem",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "0.75rem",
+      height: "1.1rem",
+      width: "1.1rem",
+      minWidth: 0,
+    },
+  },
 }))
 
 export default function Header({ categories }) {
   const classes = useStyles()
+
+  const { cart } = useContext(CartContext)
 
   //useMediaQuery to determine user's screen size and adjust how tabs are rendered accordingly
   const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
@@ -146,7 +162,13 @@ export default function Header({ categories }) {
       visible: true,
       onClick: () => console.log("search"),
     },
-    { icon: cart, alt: "Cart", title: "Cart", link: "/cart", visible: true },
+    {
+      icon: cartIcon,
+      alt: "Cart",
+      title: "Cart",
+      link: "/cart",
+      visible: true,
+    },
     {
       icon: account,
       alt: "Account",
@@ -177,6 +199,14 @@ export default function Header({ categories }) {
         </Button>
         {matchesMD ? drawer : tabs}
         {actions.map(action => {
+          const image = (
+            <img
+              className={classes.icon}
+              src={action.icon}
+              alt={action.alt}
+              title={action.title}
+            />
+          )
           if (action.visible) {
             return (
               <IconButton
@@ -185,12 +215,17 @@ export default function Header({ categories }) {
                 to={action.onClick ? undefined : action.link}
                 key={action.alt}
               >
-                <img
-                  className={classes.icon}
-                  src={action.icon}
-                  alt={action.alt}
-                  title={action.title}
-                />
+                {action.alt === "Cart" ? (
+                  <Badge
+                    overlap="circular"
+                    badgeContent={cart.length}
+                    classes={{ badge: classes.badge }}
+                  >
+                    {image}
+                  </Badge>
+                ) : (
+                  image
+                )}
               </IconButton>
             )
           }

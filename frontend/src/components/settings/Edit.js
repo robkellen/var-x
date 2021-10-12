@@ -46,7 +46,7 @@ export default function Edit({
 
   const { dispatchFeedback } = useContext(FeedbackContext)
   const [loading, setLoading] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(true)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   // handle editing of user info
   const handleEdit = () => {
