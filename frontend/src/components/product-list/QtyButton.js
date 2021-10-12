@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -6,6 +6,9 @@ import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Badge from "@material-ui/core/Badge"
 import { makeStyles } from "@material-ui/core/styles"
+
+import { CartContext } from "../../contexts"
+import { addToCart } from "../../contexts/actions"
 
 //images
 import Cart from "../../images/Cart"
@@ -33,6 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
   cartButton: {
     marginLeft: "0 !important",
+    transition: "background-color 1s ease",
   },
   minusButton: {
     borderTop: "2px solid #fff",
@@ -51,13 +55,25 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main,
     padding: 0,
   },
+  success: {
+    backgroundColor: theme.palette.success.main,
+    "&:hover": {
+      backgroundColor: theme.palette.success.main,
+    },
+  },
 }))
 
-export default function QtyButton({ stock, selectedVariant }) {
+export default function QtyButton({ stock, variants, selectedVariant, name }) {
   const classes = useStyles()
 
   // set initial state to hold quantity of items
   const [qty, setQty] = useState(1)
+
+  // state to select what to display for button
+  const [success, setSuccess] = useState(false)
+
+  // reducer to add items to the cart
+  const { cart, dispatchCart } = useContext(CartContext)
 
   // handler to determine quantity of items to add/subtract in cart
   const handleChange = direction => {
@@ -75,6 +91,20 @@ export default function QtyButton({ stock, selectedVariant }) {
     setQty(newQty)
   }
 
+  // functionality to add items to the cart
+  const handleCart = () => {
+    setSuccess(true)
+    
+    dispatchCart(
+      addToCart(
+        variants[selectedVariant],
+        qty,
+        name,
+        stock[selectedVariant].qty
+      )
+    )
+  }
+
   // set selected qty value back to 1 whenever user changes variant of item displayed
   useEffect(() => {
     if (stock === null || stock === -1) {
@@ -83,6 +113,18 @@ export default function QtyButton({ stock, selectedVariant }) {
       setQty(stock[selectedVariant].qty)
     }
   }, [stock, selectedVariant])
+
+  // switch back to cart icon from check mark icon after user has added item to cart
+  useEffect(() => {
+    let timer
+
+    if (success) {
+      timer = setTimeout(() => setSuccess(false), 1500)
+    }
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [success])
 
   return (
     <Grid item>
@@ -114,15 +156,26 @@ export default function QtyButton({ stock, selectedVariant }) {
           </Button>
         </ButtonGroup>
         <Button
-          classes={{ root: clsx(classes.endButtons, classes.cartButton) }}
+          classes={{
+            root: clsx(classes.endButtons, classes.cartButton, {
+              [classes.success]: success,
+            }),
+          }}
+          onClick={handleCart}
         >
-          <Badge
-            overlap="circular"
-            badgeContent="+"
-            classes={{ badge: classes.badge }}
-          >
-            <Cart color="#fff" />
-          </Badge>
+          {success ? (
+            <Typography variant="h3" classes={{ root: classes.qtyText }}>
+              ✓
+            </Typography>
+          ) : (
+            <Badge
+              overlap="circular"
+              badgeContent="+"
+              classes={{ badge: classes.badge }}
+            >
+              <Cart color="#fff" />
+            </Badge>
+          )}
         </Button>
       </ButtonGroup>
     </Grid>
