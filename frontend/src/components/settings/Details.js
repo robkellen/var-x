@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react"
+import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Switch from "@material-ui/core/Switch"
 import { makeStyles } from "@material-ui/core/styles"
 import { useMediaQuery } from "@material-ui/core"
 
@@ -26,7 +29,8 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 10,
   },
   icon: {
-    marginBottom: "3rem",
+    marginTop: ({ checkout }) => (checkout ? "-2rem" : undefined),
+    marginBottom: ({ checkout }) => (checkout ? "1rem" : "3rem"),
     [theme.breakpoints.down("xs")]: {
       marginBottom: "1rem",
     },
@@ -53,7 +57,19 @@ const useStyles = makeStyles(theme => ({
   },
   slotsContainer: {
     position: "absolute",
-    bottom: 0,
+    bottom: ({ checkout }) => (checkout ? -8 : 0),
+  },
+  fieldContainerCart: {
+    "& > *": {
+      marginBottom: "1rem",
+    },
+  },
+  switchWrapper: {
+    marginRight: 4,
+  },
+  switchLabel: {
+    color: "#fff",
+    fontWeight: 600,
   },
   "@global": {
     ".MuiInput-underline:before, .MuiInput-underline:hover:not(.Mui-disabled):before":
@@ -76,8 +92,11 @@ export default function Details({
   setSlot,
   errors,
   setErrors,
+  checkout,
+  billing,
+  setBilling,
 }) {
-  const classes = useStyles()
+  const classes = useStyles({ checkout })
 
   // define styles based on screen size
   const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
@@ -87,11 +106,18 @@ export default function Details({
 
   // when slot changes, update values with new slot settings
   useEffect(() => {
-    setValues({ ...user.contactInfo[slot], password: "********" })
+    if (checkout) {
+      setValues(user.contactInfo[slot])
+    } else {
+      setValues({ ...user.contactInfo[slot], password: "********" })
+    }
   }, [slot])
 
   // listen to changes to values of fields in a given slot and update state
   useEffect(() => {
+    // exit this effect if this component is being used in CheckoutPortal
+    if (checkout) return
+
     const changed = Object.keys(user.contactInfo[slot]).some(
       field => values[field] !== user.contactInfo[slot][field]
     )
@@ -117,14 +143,25 @@ export default function Details({
     },
   }
 
-  const fields = [name_phone, email_password]
+  let fields = [name_phone, email_password]
+
+  // edit fields if in the CheckoutPortal component
+  if (checkout) {
+    fields = [
+      {
+        name: name_phone.name,
+        email: email_password.email,
+        phone: name_phone.phone,
+      },
+    ]
+  }
 
   return (
     <Grid
       item
       container
       direction="column"
-      lg={6}
+      lg={checkout ? 12 : 6}
       xs={12}
       alignItems="center"
       justifyContent="center"
@@ -140,11 +177,16 @@ export default function Details({
       {fields.map((pair, i) => (
         <Grid
           container
-          direction={matchesXS ? "column" : "row"}
+          direction={matchesXS || checkout ? "column" : "row"}
           key={i}
           justifyContent="center"
-          alignItems={matchesXS ? "center" : undefined}
-          classes={{ root: classes.fieldContainer }}
+          alignItems={matchesXS || checkout ? "center" : undefined}
+          classes={{
+            root: clsx({
+              [classes.fieldContainer]: !checkout,
+              [classes.fieldContainerCart]: checkout,
+            }),
+          }}
         >
           <Fields
             fields={pair}
@@ -153,13 +195,37 @@ export default function Details({
             errors={errors}
             setErrors={setErrors}
             isWhite
-            disabled={!edit}
-            settings
+            disabled={checkout ? false : !edit}
+            settings={!checkout}
           />
         </Grid>
       ))}
-      <Grid item container classes={{ root: classes.slotsContainer }}>
-        <Slots slot={slot} setSlot={setSlot} />
+      <Grid
+        item
+        container
+        justifyContent={checkout ? "space-between" : undefined}
+        classes={{ root: classes.slotsContainer }}
+      >
+        <Slots slot={slot} setSlot={setSlot} checkout={checkout} />
+        {checkout && (
+          <Grid item>
+            <FormControlLabel
+              classes={{
+                root: classes.switchWrapper,
+                label: classes.switchLabel,
+              }}
+              label="Billing"
+              labelPlacement="start"
+              control={
+                <Switch
+                  checked={billing}
+                  onChange={() => setBilling(!billing)}
+                  color="secondary"
+                />
+              }
+            />
+          </Grid>
+        )}
       </Grid>
     </Grid>
   )
