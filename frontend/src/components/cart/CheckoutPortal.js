@@ -7,6 +7,7 @@ import CheckoutNavigation from "./CheckoutNavigation"
 import Shipping from "./Shipping"
 import Details from "../settings/Details"
 import Location from "../settings/Location"
+import Payments from "../settings/Payments"
 
 const useStyles = makeStyles(theme => ({
   stepContainer: {
@@ -50,6 +51,9 @@ export default function CheckoutPortal({ user }) {
   const [errors, setErrors] = useState({})
 
   const [selectedShipping, setSelectedShipping] = useState(null)
+
+  const [billingSlot, setBillingSlot] = useState(0)
+  const [saveCard, setSaveCard] = useState(false)
 
   const shippingOptions = [
     { label: "FREE SHIPPING", price: 0 },
@@ -103,7 +107,19 @@ export default function CheckoutPortal({ user }) {
         />
       ),
     },
-    { title: "Payment" },
+    {
+      title: "Payment",
+      component: (
+        <Payments
+          slot={billingSlot}
+          setSlot={setBillingSlot}
+          user={user}
+          saveCard={saveCard}
+          setSaveCard={setSaveCard}
+          checkout
+        />
+      ),
+    },
     { title: "Confirmation" },
     { title: `Thanks, ${user.username}!` },
   ]
