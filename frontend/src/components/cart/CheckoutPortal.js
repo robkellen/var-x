@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 
 import CheckoutNavigation from "./CheckoutNavigation"
+import Shipping from "./Shipping"
 import Details from "../settings/Details"
 import Location from "../settings/Location"
 
@@ -48,6 +49,14 @@ export default function CheckoutPortal({ user }) {
 
   const [errors, setErrors] = useState({})
 
+  const [selectedShipping, setSelectedShipping] = useState(null)
+
+  const shippingOptions = [
+    { label: "FREE SHIPPING", price: 0 },
+    { label: "2-DAY SHIPPING", price: 9.99 },
+    { label: "OVERNIGHT SHIPPING", price: 29.99 },
+  ]
+
   // steps involved in checkout out with the items in the cart
   const steps = [
     {
@@ -84,7 +93,16 @@ export default function CheckoutPortal({ user }) {
         />
       ),
     },
-    { title: "Shipping" },
+    {
+      title: "Shipping",
+      component: (
+        <Shipping
+          shippingOptions={shippingOptions}
+          selectedShipping={selectedShipping}
+          setSelectedShipping={setSelectedShipping}
+        />
+      ),
+    },
     { title: "Payment" },
     { title: "Confirmation" },
     { title: `Thanks, ${user.username}!` },
