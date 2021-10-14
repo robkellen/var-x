@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import Chip from "@material-ui/core/Chip"
@@ -6,6 +6,9 @@ import IconButton from "@material-ui/core/IconButton"
 import { makeStyles, useTheme } from "@material-ui/core/styles"
 
 import QtyButton from "../product-list/QtyButton"
+
+import { removeFromCart } from "../../contexts/actions"
+import { CartContext } from "../../contexts"
 
 import FavoriteIcon from "../../images/Favorite.js"
 import SubscribeIcon from "../../images/Subscription.js"
@@ -41,16 +44,33 @@ const useStyles = makeStyles(theme => ({
   itemContainer: {
     margin: "2rem 0 2rem 2rem",
   },
+  actionButton: {
+    "&:hover": {
+      backgroundColor: "transparent",
+    },
+  },
 }))
 
 export default function Item({ item }) {
   const classes = useStyles()
   const theme = useTheme()
 
+  const { dispatchCart } = useContext(CartContext)
+
+  // handle removal of item from cart
+  const handleDelete = () => {
+    dispatchCart(removeFromCart(item.variant, item.qty))
+  }
+
   const actions = [
     { icon: FavoriteIcon, color: theme.palette.secondary.main },
     { icon: SubscribeIcon, color: theme.palette.secondary.main },
-    { icon: DeleteIcon, color: theme.palette.error.main, size: "2.5rem" },
+    {
+      icon: DeleteIcon,
+      color: theme.palette.error.main,
+      size: "2.5rem",
+      onClick: handleDelete,
+    },
   ]
 
   return (
@@ -102,7 +122,11 @@ export default function Item({ item }) {
           <Grid item container xs justifyContent="flex-end">
             {actions.map((action, i) => (
               <Grid item key={i}>
-                <IconButton>
+                <IconButton
+                  disableRipple
+                  classes={{ root: classes.actionButton }}
+                  onClick={() => action.onClick()}
+                >
                   <span
                     className={classes.actionWrapper}
                     style={{ height: action.size, width: action.size }}
