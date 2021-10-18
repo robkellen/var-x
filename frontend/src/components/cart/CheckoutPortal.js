@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles"
 
 import CheckoutNavigation from "./CheckoutNavigation"
 import Shipping from "./Shipping"
+import Confirmation from "./Confirmation"
 import Details from "../settings/Details"
 import Location from "../settings/Location"
 import Payments from "../settings/Payments"
@@ -120,7 +121,7 @@ export default function CheckoutPortal({ user }) {
         />
       ),
     },
-    { title: "Confirmation" },
+    { title: "Confirmation", component: <Confirmation /> },
     { title: `Thanks, ${user.username}!` },
   ]
 
