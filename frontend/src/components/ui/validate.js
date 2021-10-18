@@ -20,6 +20,8 @@ export default function validate(values) {
       ),
     zip: val => /^\d{5}(-\d{4})?$/.test(val),
     promo: val => true,
+    city: val => val.length !== 0,
+    state: val => val.length !== 0,
   }
 
   // output: {field: valid} eg {email: true, phone: true}

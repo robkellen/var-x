@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
@@ -9,6 +9,7 @@ import Confirmation from "./Confirmation"
 import Details from "../settings/Details"
 import Location from "../settings/Location"
 import Payments from "../settings/Payments"
+import validate from "../ui/validate"
 
 const useStyles = makeStyles(theme => ({
   stepContainer: {
@@ -62,6 +63,13 @@ export default function CheckoutPortal({ user }) {
     { label: "OVERNIGHT SHIPPING", price: 29.99 },
   ]
 
+  // handle info validation for each step
+  const errorHelper = values => {
+    const valid = validate(values)
+
+    return Object.keys(valid).some(value => !valid[value])
+  }
+
   // steps involved in checkout out with the items in the cart
   const steps = [
     {
@@ -80,6 +88,7 @@ export default function CheckoutPortal({ user }) {
           setBilling={setDetailBilling}
         />
       ),
+      error: errorHelper(detailValues),
     },
     {
       title: "Address",
@@ -97,6 +106,7 @@ export default function CheckoutPortal({ user }) {
           checkout
         />
       ),
+      error: errorHelper(locationValues),
     },
     {
       title: "Shipping",
@@ -107,6 +117,7 @@ export default function CheckoutPortal({ user }) {
           setSelectedShipping={setSelectedShipping}
         />
       ),
+      error: selectedShipping === null,
     },
     {
       title: "Payment",
@@ -120,10 +131,16 @@ export default function CheckoutPortal({ user }) {
           checkout
         />
       ),
+      error: false,
     },
     { title: "Confirmation", component: <Confirmation /> },
     { title: `Thanks, ${user.username}!` },
   ]
+
+  // reset errors if user changes slots for info in any of the fields to recheck validation
+  useEffect(() => {
+    setErrors({})
+  }, [detailSlot, locationSlot])
 
   return (
     <Grid item container direction="column" xs={6} alignItems="flex-end">
