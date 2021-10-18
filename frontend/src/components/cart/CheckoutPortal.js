@@ -38,8 +38,13 @@ export default function CheckoutPortal({ user }) {
     email: "",
     phone: "",
   })
+  const [billingDetails, setBillingDetails] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  })
   const [detailSlot, setDetailSlot] = useState(0)
-  const [detailBilling, setDetailBilling] = useState(false)
+  const [detailForBilling, setDetailForBilling] = useState(false)
 
   const [locationValues, setLocationValues] = useState({
     street: "",
@@ -47,8 +52,14 @@ export default function CheckoutPortal({ user }) {
     city: "",
     state: "",
   })
+  const [billingLocation, setBillingLocation] = useState({
+    street: "",
+    zip: "",
+    city: "",
+    state: "",
+  })
   const [locationSlot, setLocationSlot] = useState(0)
-  const [locationBilling, setLocationBilling] = useState(false)
+  const [locationForBilling, setLocationForBilling] = useState(false)
 
   const [errors, setErrors] = useState({})
 
@@ -71,7 +82,7 @@ export default function CheckoutPortal({ user }) {
   }
 
   // steps involved in checkout out with the items in the cart
-  const steps = [
+  let steps = [
     {
       title: "Contact Info",
       component: (
@@ -84,11 +95,25 @@ export default function CheckoutPortal({ user }) {
           errors={errors}
           setErrors={setErrors}
           checkout
-          billing={detailBilling}
-          setBilling={setDetailBilling}
+          billing={detailForBilling}
+          setBilling={setDetailForBilling}
         />
       ),
       error: errorHelper(detailValues),
+    },
+    {
+      title: "Billing Info",
+      component: (
+        <Details
+          values={billingDetails}
+          setValues={setBillingDetails}
+          errors={errors}
+          setErrors={setErrors}
+          checkout
+          noSlots
+        />
+      ),
+      error: errorHelper(billingDetails),
     },
     {
       title: "Address",
@@ -99,14 +124,28 @@ export default function CheckoutPortal({ user }) {
           setValues={setLocationValues}
           slot={locationSlot}
           setSlot={setLocationSlot}
-          billing={locationBilling}
-          setBilling={setLocationBilling}
+          billing={locationForBilling}
+          setBilling={setLocationForBilling}
           errors={errors}
           setErrors={setErrors}
           checkout
         />
       ),
       error: errorHelper(locationValues),
+    },
+    {
+      title: "Billing Address",
+      component: (
+        <Location
+          values={billingLocation}
+          setValues={setBillingLocation}
+          errors={errors}
+          setErrors={setErrors}
+          checkout
+          noSlots
+        />
+      ),
+      error: errorHelper(billingLocation),
     },
     {
       title: "Shipping",
@@ -137,10 +176,18 @@ export default function CheckoutPortal({ user }) {
     { title: `Thanks, ${user.username}!` },
   ]
 
-  // reset errors if user changes slots for info in any of the fields to recheck validation
+  // determine with step to show if detailsForBilling/locationForBilling has been established with the toggle switch
+  if (detailForBilling) {
+    steps = steps.filter(step => step.title !== "Billing Info")
+  }
+  if (locationForBilling) {
+    steps = steps.filter(step => step.title !== "Billing Address")
+  }
+
+  // reset errors if user changes slots or selectedStep for info in any of the fields to recheck validation
   useEffect(() => {
     setErrors({})
-  }, [detailSlot, locationSlot])
+  }, [detailSlot, locationSlot, selectedStep])
 
   return (
     <Grid item container direction="column" xs={6} alignItems="flex-end">
