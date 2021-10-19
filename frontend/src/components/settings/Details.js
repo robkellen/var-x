@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
@@ -95,9 +95,13 @@ export default function Details({
   checkout,
   billing,
   setBilling,
+  billingValues,
+  setBillingValues,
   noSlots,
 }) {
   const classes = useStyles({ checkout })
+
+  const isMounted = useRef(false)
 
   // define styles based on screen size
   const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
@@ -128,6 +132,26 @@ export default function Details({
 
     setChangesMade(changed)
   }, [values])
+
+  // if user toggles to have current values in a given slot as the billing values, preserve those values and save them for billing, otherwise just use the values that were already in billing state
+  useEffect(() => {
+    if (noSlots) {
+      isMounted.current = false
+      return
+    }
+
+    // skip this effect on first render
+    if (isMounted.current === false) {
+      isMounted.current = true
+      return
+    }
+
+    if (billing === false && isMounted.current) {
+      setValues(billingValues)
+    } else {
+      setBillingValues(values)
+    }
+  }, [billing])
 
   const email_password = EmailPassword(false, false, visible, setVisible, true)
   const name_phone = {
@@ -194,8 +218,10 @@ export default function Details({
         >
           <Fields
             fields={pair}
-            values={values}
-            setValues={setValues}
+            values={billing === slot && !noSlots ? billingValues : values}
+            setValues={
+              billing === slot && !noSlots ? setBillingValues : setValues
+            }
             errors={errors}
             setErrors={setErrors}
             isWhite
@@ -223,8 +249,8 @@ export default function Details({
                 labelPlacement="start"
                 control={
                   <Switch
-                    checked={billing}
-                    onChange={() => setBilling(!billing)}
+                    checked={billing === slot}
+                    onChange={() => setBilling(billing === slot ? false : slot)}
                     color="secondary"
                   />
                 }

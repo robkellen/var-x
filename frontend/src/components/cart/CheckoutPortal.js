@@ -75,10 +75,29 @@ export default function CheckoutPortal({ user }) {
   ]
 
   // handle info validation for each step
-  const errorHelper = values => {
+  const errorHelper = (values, forBilling, billingValues, slot) => {
     const valid = validate(values)
 
-    return Object.keys(valid).some(value => !valid[value])
+    // if there is a slot marked for billing
+    if (forBilling !== false && forBilling !== undefined) {
+      // validate billing values
+      const billingValid = validate(billingValues)
+
+      // if shipping and billing slot are the same...
+      if (forBilling === slot) {
+        //...only validate one set of values because they're the same
+        return Object.keys(billingValid).some(value => !billingValid[value])
+      } else {
+        // otherwise if shipping slot is not the slot marked for billing then both billing values and shipping values need to be validated
+        return (
+          Object.keys(billingValid).some(value => !billingValid[value]) ||
+          Object.keys(valid).some(value => !valid[value])
+        )
+      }
+    } else {
+      // if no slots marked for billing validate current slot
+      return Object.keys(valid).some(value => !valid[value])
+    }
   }
 
   // steps involved in checkout out with the items in the cart
@@ -97,9 +116,16 @@ export default function CheckoutPortal({ user }) {
           checkout
           billing={detailForBilling}
           setBilling={setDetailForBilling}
+          billingValues={billingDetails}
+          setBillingValues={setBillingDetails}
         />
       ),
-      error: errorHelper(detailValues),
+      error: errorHelper(
+        detailValues,
+        detailForBilling,
+        billingDetails,
+        detailSlot
+      ),
     },
     {
       title: "Billing Info",
@@ -128,10 +154,17 @@ export default function CheckoutPortal({ user }) {
           setBilling={setLocationForBilling}
           errors={errors}
           setErrors={setErrors}
+          billingValues={billingLocation}
+          setBillingValues={setBillingLocation}
           checkout
         />
       ),
-      error: errorHelper(locationValues),
+      error: errorHelper(
+        locationValues,
+        locationForBilling,
+        billingLocation,
+        locationSlot
+      ),
     },
     {
       title: "Billing Address",
@@ -191,10 +224,10 @@ export default function CheckoutPortal({ user }) {
   ]
 
   // determine with step to show if detailsForBilling/locationForBilling has been established with the toggle switch
-  if (detailForBilling) {
+  if (detailForBilling !== false) {
     steps = steps.filter(step => step.title !== "Billing Info")
   }
-  if (locationForBilling) {
+  if (locationForBilling !== false) {
     steps = steps.filter(step => step.title !== "Billing Address")
   }
 
