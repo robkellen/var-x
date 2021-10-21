@@ -111,7 +111,7 @@ export default function Details({
 
   useEffect(() => {
     // exit useEffect if noSlots prop is present
-    if (noSlots) return
+    if (noSlots || user.username === "Guest") return
 
     // when slot changes, update values with new slot settings
     if (checkout) {

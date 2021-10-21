@@ -47,15 +47,15 @@ module.exports = {
         if (serverItem.qty < clientItem.qty) {
           unavailable.push({ id: serverItem.id, qty: serverItem.qty });
         } else {
-          // validate that prices are still the same as the prices in the user cart
-          serverTotal += serverItem.price * clientItem.qty;
-
           // update qty of items available on the server
           await strapi.services.variant.update(
             { id: clientItem.variant.id },
             { qty: serverItem.qty - clientItem.qty }
           );
         }
+
+        // validate that prices are still the same as the prices in the user cart
+        serverTotal += serverItem.price * clientItem.qty;
       })
     );
 
@@ -77,7 +77,7 @@ module.exports = {
       shippingValid === undefined ||
       (serverTotal * 1.056 + shippingValid.price).toFixed(2) !== total
     ) {
-      ctx.sent({ error: "Invalid Cart" }, 400);
+      ctx.send({ error: "Invalid Cart" }, 400);
     } else if (unavailable.length > 0) {
       ctx.send({ unavailable }, 409);
     } else {
@@ -98,7 +98,7 @@ module.exports = {
 
       // if order placed by a guest do not sent guest profile back to user
       if (order.user.username === "Guest") {
-        order.user = { username: Guest };
+        order.user = { username: "Guest" };
       }
 
       ctx.send({ order }, 200);

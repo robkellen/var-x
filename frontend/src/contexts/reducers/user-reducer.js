@@ -7,7 +7,7 @@ export default function userReducer(state, action) {
 
   switch (action.type) {
     case SET_USER:
-      if (user.userName === "Guest") {
+      if (user.username === "Guest") {
         localStorage.removeItem("user")
       } else {
         localStorage.setItem("user", JSON.stringify(user))
