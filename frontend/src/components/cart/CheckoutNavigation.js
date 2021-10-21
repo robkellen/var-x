@@ -60,6 +60,7 @@ export default function CheckoutNavigation({
   location,
   locationSlot,
   setLocation,
+  setErrors,
 }) {
   const classes = useStyles({ selectedStep, steps })
 
@@ -70,7 +71,7 @@ export default function CheckoutNavigation({
 
   // handle saving/deleting user info to slot
   const handleAction = action => {
-    if (steps[selectedStep].error) {
+    if (steps[selectedStep].error && action !== "delete") {
       dispatchFeedback(
         setSnackbar({
           status: "error",
@@ -113,6 +114,8 @@ export default function CheckoutNavigation({
         )
 
         if (action === "delete") {
+          // clear errors if delete is successfull
+          setErrors({})
           if (isDetails) {
             setDetails({ name: "", email: "", phone: "" })
           } else if (isLocation) {

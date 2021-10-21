@@ -252,6 +252,7 @@ export default function CheckoutPortal({ user }) {
         location={locationValues}
         locationSlot={locationSlot}
         setLocation={setLocationValues}
+        setErrors={setErrors}
       />
       <Grid
         item
