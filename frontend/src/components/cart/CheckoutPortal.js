@@ -86,6 +86,7 @@ export default function CheckoutPortal({ user }) {
   const [selectedShipping, setSelectedShipping] = useState(null)
 
   const [billingSlot, setBillingSlot] = useState(0)
+  const [cardError, setCardError] = useState(true)
   const [saveCard, setSaveCard] = useState(false)
 
   const shippingOptions = [
@@ -222,10 +223,11 @@ export default function CheckoutPortal({ user }) {
           user={user}
           saveCard={saveCard}
           setSaveCard={setSaveCard}
+          setCardError={setCardError}
           checkout
         />
       ),
-      error: false,
+      error: cardError,
     },
     {
       title: "Confirmation",

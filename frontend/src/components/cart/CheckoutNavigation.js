@@ -70,9 +70,11 @@ const useStyles = makeStyles(theme => ({
     },
   },
   navButtons: {
-    minWidth: 0,
-    width: "1 rem",
-    height: "1.5rem",
+    [theme.breakpoints.down("xs")]: {
+      minWidth: 0,
+      width: "1 rem",
+      height: "1.5rem",
+    },
   },
 }))
 
