@@ -20,6 +20,9 @@ const useStyles = makeStyles(theme => ({
     width: "40rem",
     height: "5rem",
     position: "relative",
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
   back: {
     //hide back button if on first step or the confirmation/thank you step
@@ -39,14 +42,37 @@ const useStyles = makeStyles(theme => ({
   icon: {
     height: "2.25rem",
     width: "2.25rem",
+    [theme.breakpoints.down("xs")]: {
+      height: "1.75rem",
+      width: "1.75rem",
+    },
   },
   delete: {
     height: "2rem",
     width: "2rem",
+    [theme.breakpoints.down("xs")]: {
+      height: "1.5rem",
+      width: "1.5rem",
+    },
   },
   actions: {
     position: "absolute",
     right: 0,
+  },
+  iconButton: {
+    [theme.breakpoints.down("xs")]: {
+      padding: 6,
+    },
+  },
+  text: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.25rem",
+    },
+  },
+  navButtons: {
+    minWidth: 0,
+    width: "1 rem",
+    height: "1.5rem",
   },
 }))
 
@@ -146,22 +172,29 @@ export default function CheckoutNavigation({
       classes={{ root: classes.navbar }}
     >
       <Grid item classes={{ root: classes.back }}>
-        <Button onClick={() => setSelectedStep(selectedStep - 1)}>
-          <Typography variant="h5">{"<"}</Typography>
+        <Button
+          classes={{ root: classes.navButtons }}
+          onClick={() => setSelectedStep(selectedStep - 1)}
+        >
+          <Typography variant="h5" classes={{ root: classes.text }}>
+            {"<"}
+          </Typography>
         </Button>
       </Grid>
       <Grid item>
-        <Typography variant="h5">
+        <Typography variant="h5" classes={{ root: classes.text }}>
           {steps[selectedStep].title.toUpperCase()}
         </Typography>
       </Grid>
       <Grid item classes={{ root: classes.forward }}>
         <Button
-          classes={{ disabled: classes.disabled }}
+          classes={{ root: classes.navButtons, disabled: classes.disabled }}
           disabled={steps[selectedStep].error}
           onClick={() => setSelectedStep(selectedStep + 1)}
         >
-          <Typography variant="h5">{">"}</Typography>
+          <Typography variant="h5" classes={{ root: classes.text }}>
+            {">"}
+          </Typography>
         </Button>
       </Grid>
       {steps[selectedStep].hasActions && user.username !== "Guest" ? (
@@ -171,7 +204,10 @@ export default function CheckoutNavigation({
               {loading === "save" ? (
                 <CircularProgress />
               ) : (
-                <IconButton onClick={() => handleAction("save")}>
+                <IconButton
+                  classes={{ root: classes.iconButton }}
+                  onClick={() => handleAction("save")}
+                >
                   <img src={save} alt="save" className={classes.icon} />
                 </IconButton>
               )}
@@ -180,7 +216,10 @@ export default function CheckoutNavigation({
               {loading === "delete" ? (
                 <CircularProgress />
               ) : (
-                <IconButton onClick={() => handleAction("delete")}>
+                <IconButton
+                  classes={{ root: classes.iconButton }}
+                  onClick={() => handleAction("delete")}
+                >
                   <span className={classes.delete}>
                     <Delete color="#fff" />
                   </span>

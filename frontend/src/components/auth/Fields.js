@@ -2,7 +2,6 @@ import React from "react"
 import Grid from "@material-ui/core/Grid"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
-import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 
 import validate from "../ui/validate"
@@ -14,9 +13,13 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("xs")]: {
       width: ({ fullWidth }) => (fullWidth ? undefined : "15rem"),
     },
+    [theme.breakpoints.up("xs")]: {
+      width: ({ xs }) => (xs ? "10rem" : undefined),
+    },
   },
   input: {
     color: ({ isWhite }) => (isWhite ? "#fff" : theme.palette.secondary.main),
+    fontSize: ({ xs }) => (xs ? "1.25rem" : undefined),
   },
 }))
 
@@ -30,8 +33,9 @@ export default function Fields({
   disabled,
   fullWidth,
   settings,
+  xs,
 }) {
-  const classes = useStyles({ isWhite, fullWidth, settings })
+  const classes = useStyles({ isWhite, fullWidth, settings, xs })
 
   return Object.keys(fields).map(field => {
     // helper function to validate information that user enters into email and password fields

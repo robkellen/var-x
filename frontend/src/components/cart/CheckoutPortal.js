@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
-import Typography from "@material-ui/core/Typography"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
 
 import CheckoutNavigation from "./CheckoutNavigation"
 import Shipping from "./Shipping"
 import Confirmation from "./Confirmation"
 import BillingConfirmation from "./BillingConfirmation"
+import ThankYou from "./ThankYou"
 import Details from "../settings/Details"
 import Location from "../settings/Location"
 import Payments from "../settings/Payments"
@@ -17,6 +18,14 @@ const useStyles = makeStyles(theme => ({
     width: "40rem",
     height: "25rem",
     backgroundColor: theme.palette.primary.main,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
+  },
+  container: {
+    [theme.breakpoints.down("md")]: {
+      marginBottom: "5rem",
+    },
   },
   "@global": {
     ".MuiInput-underline:before, .MuiInput-underline:hover:not(.Mui-disabled):before":
@@ -31,6 +40,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function CheckoutPortal({ user }) {
   const classes = useStyles()
+
+  // check screen size to apply styles accordingly
+  const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
 
   // set initial state for steps of checkout
   const [selectedStep, setSelectedStep] = useState(0)
@@ -63,6 +75,8 @@ export default function CheckoutPortal({ user }) {
   const [locationForBilling, setLocationForBilling] = useState(false)
 
   const [errors, setErrors] = useState({})
+
+  const [order, setOrder] = useState(null)
 
   const [selectedShipping, setSelectedShipping] = useState(null)
 
@@ -213,6 +227,7 @@ export default function CheckoutPortal({ user }) {
       component: (
         <Confirmation
           user={user}
+          setOrder={setOrder}
           detailValues={detailValues}
           billingDetails={billingDetails}
           detailForBilling={detailForBilling}
@@ -221,10 +236,15 @@ export default function CheckoutPortal({ user }) {
           locationForBilling={locationForBilling}
           shippingOptions={shippingOptions}
           selectedShipping={selectedShipping}
+          selectedStep={selectedStep}
+          setSelectedStep={setSelectedStep}
         />
       ),
     },
-    { title: `Thanks, ${user.username}!` },
+    {
+      title: `Thanks, ${user.username.split(" ")[0]}!`,
+      component: <ThankYou selectedShipping={selectedShipping} order={order} />,
+    },
   ]
 
   // determine with step to show if detailsForBilling/locationForBilling has been established with the toggle switch
@@ -241,7 +261,14 @@ export default function CheckoutPortal({ user }) {
   }, [detailSlot, locationSlot, selectedStep])
 
   return (
-    <Grid item container direction="column" xs={6} alignItems="flex-end">
+    <Grid
+      item
+      container
+      direction="column"
+      lg={6}
+      alignItems={matchesMD ? "flex-start" : "flex-end"}
+      classes={{ root: classes.container }}
+    >
       <CheckoutNavigation
         steps={steps}
         selectedStep={selectedStep}
