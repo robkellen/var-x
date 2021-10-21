@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
 
 import CheckoutNavigation from "./CheckoutNavigation"
 import Shipping from "./Shipping"
@@ -37,6 +39,9 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }))
+
+// connect stripe account to the application
+const stripePromise = loadStripe(`${process.env.GATSBY_STRIPE_PK}`)
 
 export default function CheckoutPortal({ user }) {
   const classes = useStyles()
@@ -288,7 +293,9 @@ export default function CheckoutPortal({ user }) {
         alignItems="center"
         direction="column"
       >
-        {steps[selectedStep].component}
+        <Elements stripe={stripePromise}>
+          {steps[selectedStep].component}
+        </Elements>
       </Grid>
       {steps[selectedStep].title === "Confirmation" && (
         <BillingConfirmation
