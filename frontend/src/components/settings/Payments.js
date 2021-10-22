@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
@@ -133,6 +133,19 @@ export default function Payments({
       />
     </form>
   )
+
+  useEffect(() => {
+    // if this component is being accessed in Settings or if user is a guest exit this useEffect
+    if (!checkout || !user.jwt) return
+
+    if (user.paymentMethods[slot].last4 !== "") {
+      setCard(user.paymentMethods[slot])
+      setCardError(false)
+    } else {
+      setCard({ brand: "", last4: "" })
+      setCardError(true)
+    }
+  }, [slot])
 
   return (
     <Grid
