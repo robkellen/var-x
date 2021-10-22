@@ -104,6 +104,9 @@ module.exports = {
       total,
       items,
       transaction,
+      paymentMethod,
+      saveCard,
+      cardSlot,
     } = ctx.request.body;
 
     // is user logged in or are they a guest?
@@ -128,6 +131,17 @@ module.exports = {
       })
     );
 
+    if (saveCard && ctx.state.user) {
+      let newMethods = [...ctx.state.user.paymentMethods];
+
+      newMethods[cardSlot] = paymentMethod;
+
+      await strapi.plugins["users-permissions"].services.user.edit(
+        { id: orderCustomer },
+        { paymentMethods: newMethods }
+      );
+    }
+
     var order = await strapi.services.order.create({
       shippingAddress,
       billingAddress,
@@ -139,6 +153,7 @@ module.exports = {
       total,
       items,
       transaction,
+      paymentMethod,
       user: orderCustomer,
     });
 

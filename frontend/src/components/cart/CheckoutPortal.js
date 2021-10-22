@@ -85,9 +85,10 @@ export default function CheckoutPortal({ user }) {
 
   const [selectedShipping, setSelectedShipping] = useState(null)
 
-  const [billingSlot, setBillingSlot] = useState(0)
+  const [cardSlot, setCardSlot] = useState(0)
   const [cardError, setCardError] = useState(true)
   const [saveCard, setSaveCard] = useState(false)
+  const [card, setCard] = useState({ brand: "", last4: "" })
 
   const shippingOptions = [
     { label: "FREE SHIPPING", price: 0 },
@@ -223,8 +224,9 @@ export default function CheckoutPortal({ user }) {
       title: "Payment",
       component: (
         <Payments
-          slot={billingSlot}
-          setSlot={setBillingSlot}
+          setCard={setCard}
+          slot={cardSlot}
+          setSlot={setCardSlot}
           user={user}
           saveCard={saveCard}
           setSaveCard={setSaveCard}
@@ -240,6 +242,10 @@ export default function CheckoutPortal({ user }) {
       component: (
         <Confirmation
           user={user}
+          order={order}
+          card={card}
+          cardSlot={cardSlot}
+          saveCard={saveCard}
           setOrder={setOrder}
           detailValues={detailValues}
           billingDetails={billingDetails}
@@ -251,7 +257,6 @@ export default function CheckoutPortal({ user }) {
           selectedShipping={selectedShipping}
           selectedStep={selectedStep}
           setSelectedStep={setSelectedStep}
-          order={order}
         />
       ),
     },

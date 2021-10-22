@@ -12,8 +12,8 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { v4 as uuidv4 } from "uuid"
 
 import Fields from "../auth/Fields"
-import { CartContext, FeedbackContext } from "../../contexts"
-import { setSnackbar, clearCart } from "../../contexts/actions"
+import { CartContext, FeedbackContext, UserContext } from "../../contexts"
+import { setSnackbar, clearCart, setUser } from "../../contexts/actions"
 
 // images
 import confirmationIcon from "../../images/tag.svg"
@@ -135,6 +135,9 @@ export default function Confirmation({
   order,
   setOrder,
   stepNumber,
+  saveCard,
+  card,
+  cardSlot,
 }) {
   const classes = useStyles({ selectedStep, stepNumber })
 
@@ -146,6 +149,7 @@ export default function Confirmation({
 
   const { cart, dispatchCart } = useContext(CartContext)
   const { dispatchFeedback } = useContext(FeedbackContext)
+  const { dispatchUser } = useContext(UserContext)
 
   const [loading, setLoading] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
@@ -205,7 +209,7 @@ export default function Confirmation({
       adornment: <img src={zipAdornment} alt="city, state, zip code" />,
     },
     {
-      value: "**** **** **** 1234",
+      value: `${card.brand.toUpperCase()} ${card.last4}`,
       adornment: (
         <img src={cardAdornment} alt="credit card" className={classes.card} />
       ),
@@ -278,6 +282,7 @@ export default function Confirmation({
             phone: billingDetails.phone,
           },
         },
+        setup_future_usage: saveCard ? "off_session" : undefined,
       },
       { idempotencyKey }
     )
@@ -303,6 +308,9 @@ export default function Confirmation({
             total: total.toFixed(2),
             items: cart,
             transaction: result.paymentIntent.id,
+            paymentMethod: card,
+            saveCard,
+            cardSlot,
           },
           {
             headers:
@@ -312,6 +320,13 @@ export default function Confirmation({
           }
         )
         .then(response => {
+          // save the card to the user's profile if they opt to save it
+          if (saveCard) {
+            let newUser = { ...user }
+            newUser.paymentMethods[cardSlot] = card
+            dispatchUser(setUser(newUser))
+          }
+
           setLoading(false)
 
           dispatchCart(clearCart())
