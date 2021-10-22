@@ -35,6 +35,8 @@ const useStyles = makeStyles(theme => ({
     },
   },
   locationContainer: {
+    display: ({ selectedStep, stepNumber, checkout }) =>
+      checkout && selectedStep !== stepNumber ? "none" : "flex",
     position: "relative",
     [theme.breakpoints.down("md")]: {
       borderBottom: "4px solid #fff",
@@ -73,8 +75,10 @@ export default function Location({
   billingValues,
   setBillingValues,
   noSlots,
+  stepNumber,
+  selectedStep,
 }) {
-  const classes = useStyles({ checkout })
+  const classes = useStyles({ checkout, stepNumber, selectedStep })
 
   const isMounted = useRef(false)
 

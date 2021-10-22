@@ -6,33 +6,22 @@
  */
 
 const { sanitizeEntity } = require("strapi-utils");
+const stripe = require("stripe")(process.env.STRIPE_SK);
 
 // guest account
 const GUEST_ID = "61707da7f2996738259967bd";
 
 module.exports = {
-  async place(ctx) {
-    // define content of order
+  // create paymentIntent through Stripe
+  async process(ctx) {
     const {
-      shippingAddress,
-      billingAddress,
-      shippingInfo,
-      billingInfo,
-      shippingOption,
-      subtotal,
-      tax,
-      total,
       items,
+      total,
+      shippingOption,
+      idempotencyKey,
+      storedIntent,
+      email,
     } = ctx.request.body;
-
-    // is user logged in or are they a guest?
-    let orderCustomer;
-
-    if (ctx.state.user) {
-      orderCustomer = ctx.state.user.id;
-    } else {
-      orderCustomer = GUEST_ID;
-    }
 
     let serverTotal = 0;
     let unavailable = [];
@@ -46,12 +35,6 @@ module.exports = {
         // check if item is still in stock
         if (serverItem.qty < clientItem.qty) {
           unavailable.push({ id: serverItem.id, qty: serverItem.qty });
-        } else {
-          // update qty of items available on the server
-          await strapi.services.variant.update(
-            { id: clientItem.variant.id },
-            { qty: serverItem.qty - clientItem.qty }
-          );
         }
 
         // validate that prices are still the same as the prices in the user cart
@@ -81,27 +64,91 @@ module.exports = {
     } else if (unavailable.length > 0) {
       ctx.send({ unavailable }, 409);
     } else {
-      var order = await strapi.services.order.create({
-        shippingAddress,
-        billingAddress,
-        shippingInfo,
-        billingInfo,
-        shippingOption,
-        subtotal,
-        tax,
-        total,
-        items,
-        user: orderCustomer,
-      });
+      // generate paymentIntent and send clientSecret
+      if (storedIntent) {
+        const update = await stripe.paymentIntents.update(
+          storedIntent,
+          {
+            amount: total * 100,
+          },
+          { idempotencyKey }
+        );
 
-      order = sanitizeEntity(order, { model: strapi.models.order });
+        ctx.send({ client_secret: update.client_secret, intentID: update.id });
+      } else {
+        const intent = await stripe.paymentIntents.create(
+          {
+            amount: total * 100,
+            currency: "usd",
+            customer: ctx.state.user ? ctx.state.user.stripeID : undefined,
+            receipt_email: email,
+          },
+          { idempotencyKey }
+        );
 
-      // if order placed by a guest do not sent guest profile back to user
-      if (order.user.username === "Guest") {
-        order.user = { username: "Guest" };
+        ctx.send({ client_secret: intent.client_secret, intentID: intent.id });
       }
-
-      ctx.send({ order }, 200);
     }
+  },
+
+  async finalize(ctx) {
+    // define content of order
+    const {
+      shippingAddress,
+      billingAddress,
+      shippingInfo,
+      billingInfo,
+      shippingOption,
+      subtotal,
+      tax,
+      total,
+      items,
+      transaction,
+    } = ctx.request.body;
+
+    // is user logged in or are they a guest?
+    let orderCustomer;
+
+    if (ctx.state.user) {
+      orderCustomer = ctx.state.user.id;
+    } else {
+      orderCustomer = GUEST_ID;
+    }
+
+    await Promise.all(
+      items.map(async (clientItem) => {
+        const serverItem = await strapi.services.variant.findOne({
+          id: clientItem.variant.id,
+        });
+
+        await strapi.services.variant.update(
+          { id: clientItem.variant.id },
+          { qty: serverItem.qty - clientItem.qty }
+        );
+      })
+    );
+
+    var order = await strapi.services.order.create({
+      shippingAddress,
+      billingAddress,
+      shippingInfo,
+      billingInfo,
+      shippingOption,
+      subtotal,
+      tax,
+      total,
+      items,
+      transaction,
+      user: orderCustomer,
+    });
+
+    order = sanitizeEntity(order, { model: strapi.models.order });
+
+    // if order placed by a guest do not sent guest profile back to user
+    if (order.user.username === "Guest") {
+      order.user = { username: "Guest" };
+    }
+
+    ctx.send({ order }, 200);
   },
 };

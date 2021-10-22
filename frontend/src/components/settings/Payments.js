@@ -39,6 +39,8 @@ const useStyles = makeStyles(theme => ({
     },
   },
   paymentContainer: {
+    display: ({ selectedStep, stepNumber, checkout }) =>
+      checkout && selectedStep !== stepNumber ? "none" : "flex",
     borderLeft: ({ checkout }) => (checkout ? 0 : "4px solid #fff"),
     position: "relative",
     [theme.breakpoints.down("md")]: {
@@ -73,8 +75,10 @@ export default function Payments({
   saveCard,
   setSaveCard,
   setCardError,
+  selectedStep,
+  stepNumber,
 }) {
-  const classes = useStyles({ checkout })
+  const classes = useStyles({ checkout, stepNumber, selectedStep })
 
   const stripe = useStripe()
   const elements = useElements()

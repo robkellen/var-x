@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import axios from "axios"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
@@ -8,6 +8,8 @@ import Chip from "@material-ui/core/Chip"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
+import { v4 as uuidv4 } from "uuid"
 
 import Fields from "../auth/Fields"
 import { CartContext, FeedbackContext } from "../../contexts"
@@ -98,6 +100,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: "auto",
   },
   mainContainer: {
+    display: ({ selectedStep, stepNumber }) =>
+      selectedStep !== stepNumber ? "none" : "flex",
     height: "100%",
   },
   chipRoot: {
@@ -128,9 +132,14 @@ export default function Confirmation({
   selectedShipping,
   selectedStep,
   setSelectedStep,
+  order,
   setOrder,
+  stepNumber,
 }) {
-  const classes = useStyles()
+  const classes = useStyles({ selectedStep, stepNumber })
+
+  const stripe = useStripe()
+  const elements = useElements()
 
   // determine screen size to apply styles accordingly
   const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
@@ -139,6 +148,7 @@ export default function Confirmation({
   const { dispatchFeedback } = useContext(FeedbackContext)
 
   const [loading, setLoading] = useState(false)
+  const [clientSecret, setClientSecret] = useState(null)
 
   // state for promo codes
   const [promo, setPromo] = useState("")
@@ -216,7 +226,7 @@ export default function Confirmation({
     },
     {
       label: "SHIPPING",
-      value: shipping.price.toFixed(2),
+      value: shipping?.price.toFixed(2),
     },
     {
       label: "TAX",
@@ -244,72 +254,161 @@ export default function Confirmation({
   )
 
   // handle placement of order
-  const handleOrder = () => {
+  const handleOrder = async () => {
     setLoading(true)
 
-    axios
-      .post(
-        process.env.GATSBY_STRAPI_URL + "/orders/place",
-        {
-          shippingAddress: locationValues,
-          billingAddress: billingLocation,
-          shippingInfo: detailValues,
-          billingInfo: billingDetails,
-          shippingOption: shipping,
-          subtotal: subtotal.toFixed(2),
-          tax: tax.toFixed(2),
-          total: total.toFixed(2),
-          items: cart,
+    const idempotencyKey = uuidv4()
+
+    // get card element info from payments step to confirm payment
+    const cardElement = elements.getElement(CardElement)
+
+    const result = await stripe.confirmCardPayment(
+      clientSecret,
+      {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            address: {
+              city: billingLocation.city,
+              state: billingLocation.state,
+              line1: billingLocation.street,
+            },
+            email: billingDetails.email,
+            name: billingDetails.name,
+            phone: billingDetails.phone,
+          },
         },
-        {
-          headers:
-            user.username === "Guest"
-              ? undefined
-              : { Authorization: `Bearer ${user.jwt}` },
-        }
+      },
+      { idempotencyKey }
+    )
+
+    if (result.error) {
+      console.error(result.error.message)
+      dispatchFeedback(
+        setSnackbar({ status: "error", message: result.error.message })
       )
-      .then(response => {
-        setLoading(false)
+      setLoading(false)
+    } else if (result.paymentIntent.status === "succeeded") {
+      axios
+        .post(
+          process.env.GATSBY_STRAPI_URL + "/orders/finalize",
+          {
+            shippingAddress: locationValues,
+            billingAddress: billingLocation,
+            shippingInfo: detailValues,
+            billingInfo: billingDetails,
+            shippingOption: shipping,
+            subtotal: subtotal.toFixed(2),
+            tax: tax.toFixed(2),
+            total: total.toFixed(2),
+            items: cart,
+            transaction: result.paymentIntent.id,
+          },
+          {
+            headers:
+              user.username === "Guest"
+                ? undefined
+                : { Authorization: `Bearer ${user.jwt}` },
+          }
+        )
+        .then(response => {
+          setLoading(false)
 
-        dispatchCart(clearCart())
+          dispatchCart(clearCart())
 
-        setOrder(response.data.order)
+          localStorage.removeItem("intentID")
 
-        setSelectedStep(selectedStep + 1)
-      })
-      .catch(error => {
-        setLoading(false)
-        console.error(error)
+          setClientSecret(null)
 
-        switch (error.response.status) {
-          case 400:
-            dispatchFeedback(
-              setSnackbar({ status: "error", message: "Invalid Cart" })
-            )
-            break
-          case 409:
-            dispatchFeedback(
-              setSnackbar({
-                status: "error",
-                message:
-                  `The following items are not available at the requested quantity.  Please update your cart and try again.\n` +
-                  `${error.response.data.unavailable.map(
-                    item => `\nItem: ${item.id}, Available: ${item.qty}`
-                  )}`,
-              })
-            )
-            break
-          default:
-            dispatchFeedback(
-              setSnackbar({
-                status: "error",
-                message:
-                  "Something went wrong.  Please refresh the page and try again.  You have NOT been charged.",
-              })
-            )
-        }
-      })
+          setOrder(response.data.order)
+
+          setSelectedStep(selectedStep + 1)
+        })
+        .catch(error => {
+          setLoading(false)
+          console.error(error)
+          console.log("FAILED PAYMENT INTENT", result.paymentIntent.id)
+          console.log("FAILED CART", cart)
+
+          localStorage.removeItem("intentID")
+          setClientSecret(null)
+
+          dispatchFeedback(
+            setSnackbar({
+              message: "error",
+              message:
+                "There was a problem saving your order.  Please keep this screen open and contact support.",
+            })
+          )
+        })
+    }
   }
+
+  // use effect to create paymentIntent in Stripe
+  useEffect(() => {
+    if (!order && cart.length !== 0 && selectedStep === stepNumber) {
+      const storedIntent = localStorage.getItem("intentID")
+      const idempotencyKey = uuidv4()
+
+      // clear client secret whenever a new paymentIntent is made
+      setClientSecret(null)
+
+      axios
+        .post(
+          process.env.GATSBY_STRAPI_URL + "/orders/process",
+          {
+            items: cart,
+            total: total.toFixed(2),
+            shippingOption: shipping,
+            idempotencyKey,
+            storedIntent,
+            email: detailValues.email,
+          },
+          {
+            headers: user.jwt
+              ? {
+                  Authorization: `Bearer ${user.jwt}`,
+                }
+              : undefined,
+          }
+        )
+        .then(response => {
+          setClientSecret(response.data.client_secret)
+          localStorage.setItem("intentID", response.data.intentID)
+        })
+        .catch(error => {
+          console.error(error)
+
+          switch (error.response.status) {
+            case 400:
+              dispatchFeedback(
+                setSnackbar({ status: "error", message: "Invalid Cart" })
+              )
+              break
+            case 409:
+              dispatchFeedback(
+                setSnackbar({
+                  status: "error",
+                  message:
+                    `The following items are not available at the requested quantity.  Please update your cart and try again.\n` +
+                    `${error.response.data.unavailable.map(
+                      item => `\nItem: ${item.id}, Available: ${item.qty}`
+                    )}`,
+                })
+              )
+              break
+            default:
+              dispatchFeedback(
+                setSnackbar({
+                  status: "error",
+                  message:
+                    "Something went wrong.  Please refresh the page and try again.  You have NOT been charged.",
+                })
+              )
+          }
+        })
+    }
+  }, [cart, selectedStep, stepNumber])
 
   return (
     <Grid
@@ -325,7 +424,7 @@ export default function Confirmation({
               item
               container
               alignItems="center"
-              key={field.value}
+              key={i}
               classes={{
                 root: clsx(classes.fieldRow, {
                   [classes.darkBackground]: i % 2 !== 0,
@@ -389,7 +488,7 @@ export default function Confirmation({
         <Button
           classes={{ root: classes.button, disabled: classes.disabled }}
           onClick={handleOrder}
-          disabled={cart.length === 0 || loading}
+          disabled={cart.length === 0 || loading || !clientSecret}
         >
           <Grid container justifyContent="space-around" alignItems="center">
             <Grid item>
