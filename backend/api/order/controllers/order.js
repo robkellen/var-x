@@ -11,6 +11,11 @@ const stripe = require("stripe")(process.env.STRIPE_SK);
 // guest account
 const GUEST_ID = "61707da7f2996738259967bd";
 
+const sanitizeUser = (user) =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model,
+  });
+
 module.exports = {
   // create paymentIntent through Stripe
   async process(ctx) {
@@ -181,5 +186,37 @@ module.exports = {
     }
 
     ctx.send({ order }, 200);
+  },
+
+  // remove card from user in Stripe and Strapi
+  async removeCard(ctx) {
+    const { card } = ctx.request.body;
+    const { stripeID } = ctx.state.user;
+
+    const stripeMethods = await stripe.paymentMethods.list({
+      customer: stripeID,
+      type: "card",
+    });
+
+    const stripeCard = stripeMethods.data.find(
+      (method) => method.card.last4 === card
+    );
+
+    await stripe.paymentMethods.detach(stripeCard.id);
+
+    let newMethods = [...ctx.state.user.paymentMethods];
+
+    const cardSlot = newMethods.findIndex((method) => method.last4 === card);
+
+    newMethods[cardSlot] = { brand: "", last4: "" };
+
+    const newUser = await strapi.plugins[
+      "users-permissions"
+    ].services.user.edit(
+      { id: ctx.state.user.id },
+      { paymentMethods: newMethods }
+    );
+
+    ctx.send({ user: sanitizeUser(newUser) }, 200);
   },
 };
