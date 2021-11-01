@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Switch from "@material-ui/core/Switch"
 import CircularProgress from "@material-ui/core/CircularProgress"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 
@@ -22,6 +23,10 @@ const useStyles = makeStyles(theme => ({
   number: {
     color: "#fff",
     marginBottom: "5rem",
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: ({ checkout }) => (checkout ? "1rem" : undefined),
+      fontSize: ({ checkout }) => (checkout ? "1.5rem" : undefined),
+    },
   },
   removeCard: {
     backgroundColor: "#fff",
@@ -30,6 +35,9 @@ const useStyles = makeStyles(theme => ({
     marginLeft: "2rem",
     "&:hover": {
       backgroundColor: "#fff",
+    },
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: ({ checkout }) => (checkout ? 0 : undefined),
     },
   },
   removeCardText: {
@@ -41,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   icon: {
     marginBottom: "3rem",
     [theme.breakpoints.down("xs")]: {
-      marginBottom: "1rem",
+      marginBottom: ({ checkout }) => (checkout ? "3rem" : "1rem"),
     },
   },
   paymentContainer: {
@@ -64,15 +72,27 @@ const useStyles = makeStyles(theme => ({
   switchLabel: {
     color: "#fff",
     fontWeight: 600,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.25rem",
+    },
   },
   form: {
     width: "75%",
     height: "2rem",
     borderBottom: "2px solid #fff",
     marginTop: "-1rem",
+    [theme.breakpoints.down("xs")]: {
+      width: "85%",
+    },
   },
   spinner: {
     marginLeft: "3rem",
+  },
+  switchItem: {
+    width: "100%",
+  },
+  numberWrapper: {
+    marginBotoom: "5rem",
   },
 }))
 
@@ -92,6 +112,9 @@ export default function Payments({
 
   const stripe = useStripe()
   const elements = useElements()
+
+  // check screen size to display content appropriately if user is on a small screen
+  const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
 
   const [loading, setLoading] = useState(false)
 
@@ -212,7 +235,16 @@ export default function Payments({
       <Grid item>
         <img src={cardIcon} alt="payment settings" className={classes.icon} />
       </Grid>
-      <Grid item container justifyContent="center">
+      <Grid
+        item
+        container
+        justifyContent="center"
+        classes={{
+          root: clsx({
+            [classes.numberWrapper]: checkout && matchesXS,
+          }),
+        }}
+      >
         {checkout && !card.last4 ? cardWrapper : null}
         <Grid item>
           <Typography
@@ -263,7 +295,14 @@ export default function Payments({
       >
         <Slots slot={slot} setSlot={setSlot} noLabel />
         {checkout && user.username !== "Guest" && (
-          <Grid item>
+          <Grid
+            item
+            classes={{
+              root: clsx({
+                [classes.switchItem]: matchesXS,
+              }),
+            }}
+          >
             <FormControlLabel
               classes={{
                 root: classes.switchWrapper,
