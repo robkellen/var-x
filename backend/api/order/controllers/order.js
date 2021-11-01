@@ -180,6 +180,15 @@ module.exports = {
 
     order = sanitizeEntity(order, { model: strapi.models.order });
 
+    // generate HTML email confirmation and send the email
+    const confirmation = await strapi.services.order.confirmationEmail(order);
+
+    await strapi.plugins["email"].services.email.send({
+      to: order.billingInfo.email,
+      subject: "VAR-X Order Confirmation",
+      html: confirmation,
+    });
+
     // if order placed by a guest do not sent guest profile back to user
     if (order.user.username === "Guest") {
       order.user = { username: "Guest" };
