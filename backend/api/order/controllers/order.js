@@ -228,4 +228,17 @@ module.exports = {
 
     ctx.send({ user: sanitizeUser(newUser) }, 200);
   },
+
+  // controller to track user's order history
+  async history(ctx) {
+    const orders = await strapi.services.order.find({
+      user: ctx.state.user.id,
+    });
+
+    const cleanOrders = orders.map((order) =>
+      sanitizeEntity(order, { model: strapi.models.order })
+    );
+
+    ctx.send({ orders: cleanOrders }, 200);
+  },
 };
