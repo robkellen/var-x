@@ -2,10 +2,14 @@ import React, { useContext, useEffect, useState } from "react"
 import axios from "axios"
 import Grid from "@material-ui/core/Grid"
 import Chip from "@material-ui/core/Chip"
+import IconButton from "@material-ui/core/IconButton"
 import { DataGrid } from "@material-ui/data-grid"
 import { makeStyles } from "@material-ui/core/styles"
 
 import { UserContext } from "../../contexts"
+
+// images
+import BackwardsIcon from "../../images/BackwardsOutline"
 
 const useStyles = makeStyles(theme => ({
   item: {
@@ -14,6 +18,15 @@ const useStyles = makeStyles(theme => ({
   },
   chipLabel: {
     fontWeight: 600,
+  },
+  header: {
+    height: "8rem",
+    width: "100%",
+    backgroundColor: theme.palette.secondary.main,
+  },
+  icon: {
+    height: "4rem",
+    width: "4rem",
   },
   "@global": {
     ".MuiDataGrid-root .MuiDataGrid-colCellTitle": {
@@ -41,6 +54,10 @@ const useStyles = makeStyles(theme => ({
       "justify-content": "center",
       "align-items": "center",
       "font-weight": 600,
+      "border-bottom": "2px solid #fff",
+    },
+    ".MuiDataGrid-root .MuiDataGrid-cell:focus": {
+      outline: "none",
     },
     ".MuiDataGrid-root .MuiDataGrid-cell--textLeft.MuiDataGrid-cell--withRenderer":
       {
@@ -50,7 +67,7 @@ const useStyles = makeStyles(theme => ({
       "max-height": "100% !important",
     },
     ".MuiDataGrid-root .MuiDataGrid-footerContainer": {
-      "margin-top": "-12rem",
+      "margin-top": "-11rem",
     },
     ".MuiTablePagination-caption": {
       color: "#fff",
@@ -58,10 +75,17 @@ const useStyles = makeStyles(theme => ({
     ".MuiSvgIcon-root": {
       fill: "#fff",
     },
+    ".MuiDataGrid-root .MuiDataGrid-columnsContainer": {
+      "background-color": theme.palette.secondary.main,
+      border: "none",
+    },
+    ".MuiDataGrid-root": {
+      border: "none",
+    },
   },
 }))
 
-export default function OrderHistory() {
+export default function OrderHistory({ setSelectedSetting }) {
   const classes = useStyles()
 
   // initial state for component
@@ -126,7 +150,14 @@ export default function OrderHistory() {
   const rows = createData(orders)
 
   return (
-    <Grid item classes={{ root: classes.item }}>
+    <Grid item container classes={{ root: classes.item }}>
+      <Grid item classes={{ root: classes.header }}>
+        <IconButton onClick={() => setSelectedSetting(null)}>
+          <div className={classes.icon}>
+            <BackwardsIcon color="#fff" />
+          </div>
+        </IconButton>
+      </Grid>
       <DataGrid rows={rows} columns={columns} pageSize={5} align="center" />
     </Grid>
   )
