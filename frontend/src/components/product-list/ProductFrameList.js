@@ -69,6 +69,7 @@ export default function ProductFrameList({
   setSelectedColor,
   hasStyles,
   stock,
+  rating,
 }) {
   const classes = useStyles()
 
@@ -134,7 +135,7 @@ export default function ProductFrameList({
             </Typography>
           </Grid>
           <Grid item>
-            <Rating number={3.5} />
+            <Rating number={rating} />
           </Grid>
           <Grid item>
             <Chip

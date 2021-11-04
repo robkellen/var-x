@@ -94,6 +94,7 @@ export default function ProductFrameGrid({
   disableQuickView,
   small,
   stock,
+  rating,
 }) {
   const classes = useStyles({ small })
 
@@ -164,6 +165,7 @@ export default function ProductFrameGrid({
         hasStyles={hasStyles}
         stock={stock}
         imageIndex={imageIndex}
+        rating={rating}
       />
     </Grid>
   )

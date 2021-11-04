@@ -128,6 +128,7 @@ export default function ProductInfo({
   setSelectedVariant,
   stock,
   setEdit,
+  rating,
 }) {
   const classes = useStyles()
   const { user } = useContext(UserContext)
@@ -258,7 +259,7 @@ export default function ProductInfo({
                 </Typography>
               </Grid>
               <Grid item>
-                <Rating number={4.5} />
+                <Rating number={rating} />
               </Grid>
               <Grid item>
                 <Button onClick={handleEdit}>

@@ -18,6 +18,7 @@ export default function ProductDetail({
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [selectedImage, setSelectedImage] = useState(0)
   const [stock, setStock] = useState(null)
+  const [rating, setRating] = useState(0)
   const [edit, setEdit] = useState(false)
 
   //determine if screen size is medium to adjust layout of product/info
@@ -36,6 +37,7 @@ export default function ProductDetail({
       setStock(-1)
     } else if (data) {
       setStock(data.product.variants)
+      setRating(data.product.rating)
     }
   }, [error, data])
 
@@ -94,6 +96,7 @@ export default function ProductDetail({
             setSelectedVariant={setSelectedVariant}
             stock={stock}
             setEdit={setEdit}
+            rating={rating}
           />
         </Grid>
         <RecentlyViewed
