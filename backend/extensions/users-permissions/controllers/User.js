@@ -58,4 +58,24 @@ module.exports = {
 
     ctx.send("Password Changed Successfully", 200);
   },
+
+  // send user back with list of favorites
+  async me(ctx) {
+    const user = ctx.state.user;
+
+    if (!user) {
+      return ctx.badRequest(null, [
+        { messages: [{ id: "No authorization header was found." }] },
+      ]);
+    }
+
+    let newUser = { ...sanitizeUser(user) };
+    const favorites = await strapi.services.favorite.find({ user });
+    newUser.favorites = favorites.map((favorite) => ({
+      product: favorite.product.id,
+      id: favorite.id,
+    }));
+
+    ctx.body = newUser;
+  },
 };
