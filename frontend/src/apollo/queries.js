@@ -10,3 +10,20 @@ export const GET_DETAILS = gql`
     }
   }
 `
+
+// query for product reviews
+export const GET_REVIEWS = gql`
+  query getReviews($id: ID!) {
+    product(id: $id) {
+      reviews {
+        id
+        text
+        rating
+        updatedAt
+        user {
+          username
+        }
+      }
+    }
+  }
+`

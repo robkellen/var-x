@@ -18,6 +18,7 @@ export default function ProductDetail({
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [selectedImage, setSelectedImage] = useState(0)
   const [stock, setStock] = useState(null)
+  const [edit, setEdit] = useState(false)
 
   //determine if screen size is medium to adjust layout of product/info
   const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
@@ -92,12 +93,13 @@ export default function ProductDetail({
             selectedVariant={selectedVariant}
             setSelectedVariant={setSelectedVariant}
             stock={stock}
+            setEdit={setEdit}
           />
         </Grid>
         <RecentlyViewed
           products={JSON.parse(window.localStorage.getItem("recentlyViewed"))}
         />
-        <ProductReviews />
+        <ProductReviews product={id} edit={edit} setEdit={setEdit} />
       </Grid>
     </Layout>
   )
