@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useContext } from "react"
-import axios from "axios"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import Chip from "@material-ui/core/Chip"
 import Button from "@material-ui/core/Button"
-import IconButton from "@material-ui/core/IconButton"
-import CircularProgress from "@material-ui/core/CircularProgress"
 import { makeStyles } from "@material-ui/core/styles"
 
 import Rating from "../home/Rating"
 import Sizes from "../product-list/Sizes"
 import Swatches from "../product-list/Swatches"
 import QtyButton from "../product-list/QtyButton"
+import Favorite from "../ui/Favorite"
 import { colorIndex } from "../product-list/ProductFrameGrid"
 
 import { UserContext, FeedbackContext } from "../../contexts"
 import { setSnackbar } from "../../contexts/actions"
 
 // images
-import favorite from "../../images/favorite.svg"
 import subscription from "../../images/subscription.svg"
 
 const useStyles = makeStyles(theme => ({
@@ -53,6 +50,8 @@ const useStyles = makeStyles(theme => ({
   icon: {
     height: "4rem",
     width: "4rem",
+  },
+  iconWrapper: {
     margin: "0.5rem 1rem",
   },
   sectionContainer: {
@@ -97,12 +96,7 @@ const useStyles = makeStyles(theme => ({
   actionsContainer: {
     padding: "0 1rem",
   },
-  iconButton: {
-    padding: 0,
-    "&:hover": {
-      backgroundColor: "transparent",
-    },
-  },
+
   "@global": {
     ".MuiButtonGroup-groupedOutlinedVertical:not(:first-child)": {
       marginTop: 0,
@@ -141,7 +135,7 @@ export default function ProductInfo({
   product,
 }) {
   const classes = useStyles()
-  const { user } = useContext(UserContext)
+  const { user, dispatchUser } = useContext(UserContext)
   const { dispatchFeedback } = useContext(FeedbackContext)
 
   // set initial state for size/color of product
@@ -149,7 +143,6 @@ export default function ProductInfo({
     variants[selectedVariant].size
   )
   const [selectedColor, setSelectedColor] = useState(null)
-  const [loading, setLoading] = useState(false)
 
   // determine styling for product info section if screen size is extra small
   const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
@@ -217,56 +210,6 @@ export default function ProductInfo({
     reviewRef.scrollIntoView({ behavior: "smooth" })
   }
 
-  // allow user to select/deselect the product as a favorite
-  const handleFavorite = () => {
-    // validate user is logged in
-    if (user.username === "Guest") {
-      dispatchFeedback(
-        setSnackbar({
-          status: "error",
-          message: "You must be logged in to add an item to favorites.",
-        })
-      )
-      return
-    }
-    setLoading(true)
-
-    axios
-      .post(
-        process.env.GATSBY_STRAPI_URL + "/favorites",
-        {
-          product,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user.jwt}`,
-          },
-        }
-      )
-      .then(response => {
-        setLoading(false)
-
-        dispatchFeedback(
-          setSnackbar({
-            status: "success",
-            message: "Item has been added to your Favorites.",
-          })
-        )
-      })
-      .catch(error => {
-        setLoading(false)
-        console.error(error)
-
-        dispatchFeedback(
-          setSnackbar({
-            status: "error",
-            message:
-              "There was an issue adding item to your Favorites.  Please try again.",
-          })
-        )
-      })
-  }
-
   return (
     <Grid
       item
@@ -282,23 +225,10 @@ export default function ProductInfo({
         justifyContent="flex-end"
         classes={{ root: classes.background }}
       >
-        <Grid item>
-          {loading ? (
-            <CircularProgress size="4rem" />
-          ) : (
-            <IconButton
-              onClick={handleFavorite}
-              classes={{ root: classes.iconButton }}
-            >
-              <img
-                src={favorite}
-                alt="add item to favorites"
-                className={classes.icon}
-              />
-            </IconButton>
-          )}
+        <Grid item classes={{ root: classes.iconWrapper }}>
+          <Favorite size={4} product={product} />
         </Grid>
-        <Grid item>
+        <Grid item classes={{ root: classes.iconWrapper }}>
           <img
             src={subscription}
             alt="add item to subscriptions"
