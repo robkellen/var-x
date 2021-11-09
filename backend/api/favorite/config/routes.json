@@ -18,6 +18,14 @@
     },
     {
       "method": "GET",
+      "path": "/favorites/userFavorites",
+      "handler": "favorite.userFavorites",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/favorites/:id",
       "handler": "favorite.findOne",
       "config": {

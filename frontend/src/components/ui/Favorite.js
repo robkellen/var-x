@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react"
 import axios from "axios"
+import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import IconButton from "@material-ui/core/IconButton"
 import CircularProgress from "@material-ui/core/CircularProgress"
@@ -16,25 +17,31 @@ const useStyles = makeStyles(theme => ({
     width: ({ size }) => `${size || 2}rem`,
   },
   iconButton: {
-    padding: 0,
+    padding: ({ noPadding }) => (noPadding ? 0 : undefined),
     "&:hover": {
       backgroundColor: "transparent",
     },
   },
 }))
 
-export default function Favorite({ color, size, product }) {
-  const classes = useStyles({ size })
+export default function Favorite({
+  color,
+  size,
+  variant,
+  buttonClass,
+  noPadding,
+}) {
+  const classes = useStyles({ size, noPadding })
 
   const { user, dispatchUser } = useContext(UserContext)
   const { dispatchFeedback } = useContext(FeedbackContext)
   const [loading, setLoading] = useState(false)
 
   const existingFavorite = user.favorites?.find(
-    favorite => favorite.product === product
+    favorite => favorite.variant === variant
   )
 
-  // allow user to select/deselect the product as a favorite
+  // allow user to select/deselect the variant as a favorite
   const handleFavorite = () => {
     // validate user is logged in
     if (user.username === "Guest") {
@@ -59,7 +66,7 @@ export default function Favorite({ color, size, product }) {
     axiosFunction(
       process.env.GATSBY_STRAPI_URL + route,
       {
-        product,
+        variant,
         headers: existingFavorite ? auth : undefined,
       },
       { headers: auth }
@@ -85,7 +92,7 @@ export default function Favorite({ color, size, product }) {
         } else {
           newFavorites.push({
             id: response.data.id,
-            product: response.data.product.id,
+            variant: response.data.variant.id,
           })
         }
 
@@ -111,7 +118,10 @@ export default function Favorite({ color, size, product }) {
   if (loading) return <CircularProgress size={`${size || 2}rem`} />
 
   return (
-    <IconButton onClick={handleFavorite} classes={{ root: classes.iconButton }}>
+    <IconButton
+      onClick={handleFavorite}
+      classes={{ root: clsx(classes.iconButton, buttonClass) }}
+    >
       <span className={classes.icon}>
         <FavoriteIcon color={color} filled={existingFavorite} />
       </span>

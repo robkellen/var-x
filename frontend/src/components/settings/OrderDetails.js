@@ -5,6 +5,7 @@ import SwipeableDrawer from "@material-ui/core/SwipeableDrawer"
 import Typography from "@material-ui/core/Typography"
 import Chip from "@material-ui/core/Chip"
 import Button from "@material-ui/core/Button"
+import Hidden from "@material-ui/core/Hidden"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles } from "@material-ui/core/styles"
 
@@ -90,13 +91,15 @@ export default function OrderDetails({ orders, open, setOpen }) {
       disableBackdropTransition={!iOS}
       disableDiscovery={iOS}
     >
-      <Grid
-        item
-        component={Button}
-        onClick={() => setOpen(null)}
-        classes={{ root: classes.spacer }}
-        disableRipple
-      />
+      <Hidden smUp>
+        <Grid
+          item
+          component={Button}
+          onClick={() => setOpen(null)}
+          classes={{ root: classes.spacer }}
+          disableRipple
+        />
+      </Hidden>
       <Grid container direction="column" classes={{ root: classes.light }}>
         <Grid item classes={{ root: classes.dark }}>
           <Typography variant="h2" classes={{ root: classes.id }}>
