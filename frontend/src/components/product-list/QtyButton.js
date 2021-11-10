@@ -134,6 +134,8 @@ export default function QtyButton({
   useEffect(() => {
     if (stock === null || stock === -1) {
       return undefined
+    } else if (qty === 0 && stock[selectedVariant].qty !== 0) {
+      setQty(1)
     } else if (qty > stock[selectedVariant].qty) {
       setQty(stock[selectedVariant].qty)
     }
@@ -188,6 +190,7 @@ export default function QtyButton({
               }),
             }}
             onClick={handleCart}
+            disabled={stock ? stock[selectedVariant].qty === 0 : true}
           >
             {success ? (
               <Typography variant="h3" classes={{ root: classes.qtyText }}>
