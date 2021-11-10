@@ -10,12 +10,12 @@ import { makeStyles } from "@material-ui/core/styles"
 import Sizes from "../product-list/Sizes"
 import Swatches from "../product-list/Swatches"
 import QtyButton from "../product-list/QtyButton"
+import SettingsGrid from "./SettingsGrid"
 
 import DeleteIcon from "../../images/Delete"
 
 import { UserContext, FeedbackContext } from "../../contexts"
 import { setSnackbar } from "../../contexts/actions"
-import Favorite from "../ui/Favorite"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Favorites() {
+export default function Favorites({ setSelectedSetting }) {
   const classes = useStyles()
   const [products, setProducts] = useState([])
   const [selectedVariants, setSelectedVariants] = useState({})
@@ -209,6 +209,7 @@ export default function Favorites() {
       field: "",
       width: 500,
       sortable: false,
+      disableColumnMenu: true,
       renderCell: ({ value }) => (
         <IconButton>
           <span className={classes.deleteWrapper}>
@@ -266,11 +267,11 @@ export default function Favorites() {
 
   return (
     <Grid item container classes={{ root: classes.container }}>
-      <DataGrid
-        hideFooterSelectedRowCount
+      <SettingsGrid
+        setSelectedSetting={setSelectedSetting}
         rows={rows}
         columns={columns}
-        pageSize={5}
+        rowsPerPage={3}
       />
     </Grid>
   )
