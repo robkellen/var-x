@@ -15,7 +15,7 @@ import Cart from "../../images/Cart"
 
 const useStyles = makeStyles(theme => ({
   qtyText: {
-    color: ({ isCart }) => (isCart ? theme.palette.secondary.main : "#fff"),
+    color: ({ white }) => (white ? theme.palette.secondary.main : "#fff"),
   },
   mainGroup: {
     height: "3rem",
@@ -23,18 +23,23 @@ const useStyles = makeStyles(theme => ({
   editButtons: {
     height: "1.525rem",
     borderRadius: 0,
-    backgroundColor: ({ isCart }) =>
-      isCart ? "#fff" : theme.palette.secondary.main,
-    borderLeft: ({ isCart }) =>
-      `2px solid ${isCart ? theme.palette.secondary.main : "#fff"} `,
-    borderRight: "2px solid  #fff",
+    backgroundColor: ({ white }) =>
+      white ? "#fff" : theme.palette.secondary.main,
+    borderLeft: ({ white }) =>
+      `2px solid ${white ? theme.palette.secondary.main : "#fff"} `,
+    borderRight: ({ round }) => (round ? 0 : "2px solid  #fff"),
     borderBottom: "none",
     borderTop: "none",
+    borderRadius: ({ round }) => (round ? "0px 50px 50px 0px" : 0),
+    "&:hover": {
+      backgroundColor: ({ white }) =>
+        white ? "#fff" : theme.palette.secondary.light,
+    },
   },
   endButtons: {
     borderRadius: 50,
-    backgroundColor: ({ isCart }) =>
-      isCart ? "#fff" : theme.palette.secondary.main,
+    backgroundColor: ({ white }) =>
+      white ? "#fff" : theme.palette.secondary.main,
     border: "none",
   },
   cartButton: {
@@ -42,16 +47,16 @@ const useStyles = makeStyles(theme => ({
     transition: "background-color 1s ease",
   },
   minusButton: {
-    borderTop: ({ isCart }) =>
-      `2px solid ${isCart ? theme.palette.secondary.main : "#fff"} `,
+    borderTop: ({ white }) =>
+      `2px solid ${white ? theme.palette.secondary.main : "#fff"} `,
   },
   minus: {
     marginTop: "-0.25rem",
   },
   qtyButton: {
     "&:hover": {
-      backgroundColor: ({ isCart }) =>
-        isCart ? "#fff" : theme.palette.secondary.main,
+      backgroundColor: ({ white }) =>
+        white ? "#fff" : theme.palette.secondary.main,
     },
   },
   badge: {
@@ -74,19 +79,34 @@ export default function QtyButton({
   selectedVariant,
   name,
   isCart,
+  white,
+  hideCartButton,
+  round,
+  override,
 }) {
-  const classes = useStyles({ isCart })
+  const classes = useStyles({ white, round })
 
   // reducer to add items to the cart
   const { cart, dispatchCart } = useContext(CartContext)
 
   // check to see if cart has items in it before setting initital state of qty button
-  const existingItem = cart.find(
-    item => item.variant === variants[selectedVariant]
-  )
+  const existingItem = isCart
+    ? cart.find(item => item.variant === variants[selectedVariant])
+    : null
 
   // set initial state to hold quantity of items
-  const [qty, setQty] = useState(isCart ? existingItem.qty : 1)
+  const [qty, setQtyState] = useState(isCart ? existingItem.qty : 1)
+
+  let setQty
+
+  if (override) {
+    setQty = val => {
+      override.setValue(val)
+      setQtyState(val)
+    }
+  } else {
+    setQty = setQtyState
+  }
 
   // state to select what to display for button
   const [success, setSuccess] = useState(false)
@@ -182,7 +202,7 @@ export default function QtyButton({
             </Typography>
           </Button>
         </ButtonGroup>
-        {isCart ? null : (
+        {hideCartButton ? null : (
           <Button
             classes={{
               root: clsx(classes.endButtons, classes.cartButton, {
