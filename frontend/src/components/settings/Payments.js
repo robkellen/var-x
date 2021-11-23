@@ -108,6 +108,8 @@ export default function Payments({
   selectedStep,
   stepNumber,
   setCard,
+  hasSubscriptionActive,
+  hasSubscriptionCart,
 }) {
   const classes = useStyles({ checkout, stepNumber, selectedStep })
 
@@ -129,6 +131,21 @@ export default function Payments({
 
   // allow user to remove card from their account
   const removeCard = () => {
+    // check for any remaining saved cards on account
+    const remaining = user.paymentMethods.filter(method => method.last4 !== "")
+
+    // if user tries to remove last saved card while they have active subscriptions throw an error to alert user they need to remove any subscriptions before deleting the card info
+    if (hasSubscriptionActive && remaining.length === 1) {
+      dispatchFeedback(
+        setSnackbar({
+          status: "error",
+          message:
+            "You may not remove your last saved card with an active subscription.  Please add another card before continuing.",
+        })
+      )
+      return
+    }
+
     setLoading(true)
 
     axios
@@ -313,9 +330,15 @@ export default function Payments({
               labelPlacement="start"
               control={
                 <Switch
-                  disabled={user.paymentMethods[slot].last4 !== ""}
+                  disabled={
+                    user.paymentMethods[slot].last4 !== "" ||
+                    hasSubscriptionCart
+                  }
                   checked={
-                    user.paymentMethods[slot].last4 !== "" ? true : saveCard
+                    user.paymentMethods[slot].last4 !== "" ||
+                    hasSubscriptionCart
+                      ? true
+                      : saveCard
                   }
                   onChange={() => setSaveCard(!saveCard)}
                   color="secondary"
