@@ -3,7 +3,6 @@ import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
 import Dialog from "@material-ui/core/Dialog"
-import Chip from "@material-ui/core/Chip"
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
@@ -13,7 +12,11 @@ import QtyButton from "../product-list/QtyButton"
 import SelectFrequency from "./select-frequency"
 
 import { CartContext, FeedbackContext, UserContext } from "../../contexts"
-import { setSnackbar, addToCart } from "../../contexts/actions"
+import {
+  setSnackbar,
+  addToCart,
+  toggleSubscription,
+} from "../../contexts/actions"
 
 import SubscriptionIcon from "../../images/Subscription"
 
@@ -33,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main,
   },
   iconButton: {
-    padding: 0,
+    padding: ({ noPadding }) => (noPadding ? 0 : undefined),
   },
   light: {
     backgroundColor: theme.palette.primary.main,
@@ -71,8 +74,12 @@ export default function Subscription({
   selectedVariant,
   variant,
   name,
+  color,
+  noPadding,
+  isCart,
+  cartFrequency,
 }) {
-  const classes = useStyles({ size })
+  const classes = useStyles({ size, noPadding })
   const [open, setOpen] = useState(false)
   const [frequency, setFrequency] = useState("Month")
   const [qty, setQty] = useState(1)
@@ -94,6 +101,12 @@ export default function Subscription({
   }
 
   const handleOpen = () => {
+    // toggle subscription on/off if the icon being clicked is in the cart
+    if (isCart) {
+      dispatchCart(toggleSubscription(isCart.variant, cartFrequency))
+      return
+    }
+
     if (user.username === "Guest") {
       dispatchFeedback(
         setSnackbar({
@@ -110,7 +123,7 @@ export default function Subscription({
     <>
       <IconButton onClick={handleOpen} classes={{ root: classes.iconButton }}>
         <span className={classes.iconWrapper}>
-          <SubscriptionIcon />
+          <SubscriptionIcon color={color} />
         </span>
       </IconButton>
       <Dialog

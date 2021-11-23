@@ -9,13 +9,13 @@ import { makeStyles, useTheme } from "@material-ui/core/styles"
 
 import QtyButton from "../product-list/QtyButton"
 import SelectFrequency from "../ui/select-frequency"
-import FavoriteIcon from "../ui/Favorite"
+import SubscriptionIcon from "../ui/Subscription"
 
 import { removeFromCart, changeFrequency } from "../../contexts/actions"
 import { CartContext } from "../../contexts"
 
-import SubscribeIcon from "../../images/Subscription.js"
 import DeleteIcon from "../../images/Delete.js"
+import FavoriteIcon from "../ui/Favorite"
 
 const useStyles = makeStyles(theme => ({
   productImage: {
@@ -86,7 +86,7 @@ const useStyles = makeStyles(theme => ({
 export default function Item({ item }) {
   const classes = useStyles({ subscription: item.subscription })
   const theme = useTheme()
-  const [frequency, setFrequency] = useState(item.subscription)
+  const [frequency, setFrequency] = useState(item.subscription || "Month")
 
   // check screen size to apply styles accordingly
   const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
@@ -114,7 +114,15 @@ export default function Item({ item }) {
         variant: item.variant.id,
       },
     },
-    { icon: SubscribeIcon, color: theme.palette.secondary.main },
+    {
+      component: SubscriptionIcon,
+      props: {
+        color: theme.palette.secondary.main,
+        isCart: item,
+        size: matchesXS ? 2 : 3,
+        cartFrequency: frequency,
+      },
+    },
     {
       icon: DeleteIcon,
       color: theme.palette.error.main,
