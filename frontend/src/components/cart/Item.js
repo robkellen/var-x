@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import clsx from "clsx"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -8,9 +8,10 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { makeStyles, useTheme } from "@material-ui/core/styles"
 
 import QtyButton from "../product-list/QtyButton"
+import SelectFrequency from "../ui/select-frequency"
 import FavoriteIcon from "../ui/Favorite"
 
-import { removeFromCart } from "../../contexts/actions"
+import { removeFromCart, changeFrequency } from "../../contexts/actions"
 import { CartContext } from "../../contexts"
 
 import SubscribeIcon from "../../images/Subscription.js"
@@ -65,6 +66,9 @@ const useStyles = makeStyles(theme => ({
   },
   chipRoot: {
     marginLeft: "1rem",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   actionContainer: {
     marginBottom: "-0.5rem",
@@ -82,6 +86,8 @@ const useStyles = makeStyles(theme => ({
 export default function Item({ item }) {
   const classes = useStyles({ subscription: item.subscription })
   const theme = useTheme()
+  const [frequency, setFrequency] = useState(item.subscription)
+
   // check screen size to apply styles accordingly
   const matchesXS = useMediaQuery(theme => theme.breakpoints.down("xs"))
 
@@ -90,6 +96,12 @@ export default function Item({ item }) {
   // handle removal of item from cart
   const handleDelete = () => {
     dispatchCart(removeFromCart(item.variant, item.qty))
+  }
+
+  // update frequency of subscription for item in cart
+  const handleFrequency = newFrequency => {
+    dispatchCart(changeFrequency(item.variant, newFrequency))
+    setFrequency(newFrequency)
   }
 
   const actions = [
@@ -145,13 +157,31 @@ export default function Item({ item }) {
             />
           </Grid>
         </Grid>
-        <Grid item classes={{ root: classes.chipWrapper }}>
-          <Chip label={`$${item.variant.price}`} />
+        <Grid
+          item
+          container
+          alignItems="center"
+          classes={{ root: classes.chipWrapper }}
+        >
+          <Grid item>
+            <Chip label={`$${item.variant.price}`} />
+          </Grid>
           {item.subscription ? (
-            <Chip
-              classes={{ root: classes.chipRoot, label: classes.chipLabel }}
-              label={`Every ${item.subscription}`}
-            />
+            <Grid item>
+              <SelectFrequency
+                chip={
+                  <Chip
+                    classes={{
+                      root: classes.chipRoot,
+                      label: classes.chipLabel,
+                    }}
+                    label={`Every ${frequency}`}
+                  />
+                }
+                value={frequency}
+                setValue={handleFrequency}
+              />
+            </Grid>
           ) : null}
         </Grid>
         <Grid
