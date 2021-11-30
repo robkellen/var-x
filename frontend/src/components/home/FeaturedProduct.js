@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button"
 import Chip from "@material-ui/core/Chip"
 import { makeStyles } from "@material-ui/core/styles"
 import { useQuery } from "@apollo/client"
+import { Link } from "gatsby"
 
 import Rating from "./Rating"
 
@@ -111,6 +112,8 @@ export default function FeaturedProduct({
     ? "center"
     : "flex-end"
 
+  const hasStyles = node.variants.some(variant => variant.style !== null)
+
   return (
     <Grid
       item
@@ -158,7 +161,15 @@ export default function FeaturedProduct({
           />
         </Grid>
         <Grid item classes={{ root: classes.exploreContainer }}>
-          <Button classes={{ root: classes.exploreButton }}>
+          <Button
+            component={Link}
+            to={`/${node.category.name.toLowerCase()}/${node.name
+              .split(" ")[0]
+              .toLowerCase()}${
+              hasStyles ? `?style=${node.variants[0].style}` : ""
+            }`}
+            classes={{ root: classes.exploreButton }}
+          >
             <Typography variant="h5">Details</Typography>
             <img
               src={explore}
