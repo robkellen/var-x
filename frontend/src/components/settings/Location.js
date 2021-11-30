@@ -99,7 +99,7 @@ export default function Location({
 
         const { place_name, admin_name1 } = response.data.records[0].fields
 
-        setValues({ ...values, city: place_name, state: admin_name1 })
+        handleValues({ ...values, city: place_name, state: admin_name1 })
       })
       .catch(error => {
         setLoading(false)
@@ -138,7 +138,7 @@ export default function Location({
 
       getLocation()
     } else if (values.zip.length < 5 && values.city) {
-      setValues({ ...values, city: "", state: "" })
+      handleValues({ ...values, city: "", state: "" })
     }
   }, [values])
 
@@ -175,6 +175,14 @@ export default function Location({
     },
   }
 
+  // if billing is set on checkout then save the entered values as both the values, and the billing values
+  const handleValues = values => {
+    if (billing === slot && !noSlots) {
+      setBillingValues(values)
+    }
+    setValues(values)
+  }
+
   return (
     <Grid
       item
@@ -203,9 +211,7 @@ export default function Location({
         <Fields
           fields={fields}
           values={billing === slot && !noSlots ? billingValues : values}
-          setValues={
-            billing === slot && !noSlots ? setBillingValues : setValues
-          }
+          setValues={handleValues}
           errors={errors}
           setErrors={setErrors}
           isWhite
