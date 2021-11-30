@@ -64,7 +64,7 @@ module.exports = {
     // if either are true then cart is invalid and error is sent to user
     if (
       shippingValid === undefined ||
-      (serverTotal * 1.056 + shippingValid.price).toFixed(2) !== total
+      ((serverTotal + shippingValid.price) * 1.056).toFixed(2) !== total
     ) {
       ctx.send({ error: "Invalid Cart" }, 400);
     } else if (unavailable.length > 0) {

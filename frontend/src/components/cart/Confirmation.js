@@ -170,7 +170,7 @@ export default function Confirmation({
   )
 
   // mock tax amount based on my local amount
-  const tax = subtotal * 0.056
+  const tax = (subtotal + shipping?.price) * 0.056
 
   const firstFields = [
     {
