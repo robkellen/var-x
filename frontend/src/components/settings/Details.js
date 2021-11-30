@@ -192,6 +192,14 @@ export default function Details({
     ]
   }
 
+  // if billing is set on checkout then save the entered values as both the values, and the billing values
+  const handleValues = values => {
+    if (billing === slot && !noSlots) {
+      setBillingValues(values)
+    }
+    setValues(values)
+  }
+
   return (
     <Grid
       item
@@ -227,9 +235,7 @@ export default function Details({
           <Fields
             fields={pair}
             values={billing === slot && !noSlots ? billingValues : values}
-            setValues={
-              billing === slot && !noSlots ? setBillingValues : setValues
-            }
+            setValues={handleValues}
             errors={errors}
             setErrors={setErrors}
             isWhite
