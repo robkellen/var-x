@@ -134,13 +134,20 @@ export default function Payments({
     // check for any remaining saved cards on account
     const remaining = user.paymentMethods.filter(method => method.last4 !== "")
 
-    // if user tries to remove last saved card while they have active subscriptions throw an error to alert user they need to remove any subscriptions before deleting the card info
-    if (hasSubscriptionActive && remaining.length === 1) {
+    const subscriptionPayment = user.subscriptions.find(
+      subscription => subscription.paymentMethod.last4 === card.last4
+    )
+
+    // if user tries to remove the only saved card while they have active subscriptions, or the card they are trying to remove is attached to an active subscription, throw an error to alert user they need to edit any subscriptions before deleting the card info
+    if (
+      (hasSubscriptionActive && remaining.length === 1) ||
+      subscriptionPayment
+    ) {
       dispatchFeedback(
         setSnackbar({
           status: "error",
           message:
-            "You may not remove your last saved card with an active subscription.  Please add another card before continuing.",
+            "You may not remove your only saved card attached to an active subscription.  Please add another card before continuing.",
         })
       )
       return
