@@ -24,8 +24,16 @@ export default function ProductDetail({
   //determine if screen size is medium to adjust layout of product/info
   const matchesMD = useMediaQuery(theme => theme.breakpoints.down("md"))
 
-  const params = new URLSearchParams(window.location.search)
+  const params =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : { get: () => null }
   const style = params.get("style")
+
+  const recentlyViewedProducts =
+    typeof window !== "undefined"
+      ? JSON.parse(window.localStorage.getItem("recentlyViewed"))
+      : null
 
   // on page load query for product quantities for each variant
   const { loading, error, data } = useQuery(GET_DETAILS, {
@@ -100,9 +108,7 @@ export default function ProductDetail({
             product={id}
           />
         </Grid>
-        <RecentlyViewed
-          products={JSON.parse(window.localStorage.getItem("recentlyViewed"))}
-        />
+        <RecentlyViewed products={recentlyViewedProducts} />
         <ProductReviews product={id} edit={edit} setEdit={setEdit} />
       </Grid>
     </Layout>

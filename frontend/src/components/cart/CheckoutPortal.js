@@ -56,7 +56,7 @@ export default function CheckoutPortal({ user }) {
   // check cart for any new subscriptions
   const hasSubscriptionCart = cart.some(item => item.subscription)
   // verify that user has active subscriptions
-  const hasSubscriptionActive = user.subscriptions.length > 0
+  const hasSubscriptionActive = user.subscriptions?.length > 0
 
   // set initial state for steps of checkout
   const [selectedStep, setSelectedStep] = useState(0)
